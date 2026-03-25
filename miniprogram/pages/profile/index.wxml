@@ -1,3 +1,1 @@
-<block>个人页面</block>
-
-<custom-tabbar></custom-tabbar>
+<view class="container">个人页面</view>

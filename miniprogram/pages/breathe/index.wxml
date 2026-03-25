@@ -1,3 +1,1 @@
-<block>呼吸页面</block>
-
-<custom-tabbar></custom-tabbar>
+<view class="container">呼吸页面</view>

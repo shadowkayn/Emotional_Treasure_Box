@@ -1,1 +1,42 @@
-<block>粉碎页面</block>
+<view class="container">
+  <!-- 标题 -->
+  <view class="title">写下你的焦虑</view>
+
+  <!-- 输入卡片 -->
+  <view class="card">
+    <textarea
+      class="input-area"
+      placeholder="把你的焦虑写在这里..."
+      placeholder-style="color:#bbb;"
+      maxlength="500"
+      value="{{content}}"
+      bindinput="onInput"
+      disabled="{{shredding}}"
+    />
+  </view>
+
+  <!-- 碎纸机区域 -->
+  <view class="shredder-wrapper">
+    <!-- 纸张进入口 -->
+    <view class="shredder-slot"></view>
+
+    <!-- 粉碎按钮 -->
+    <view class="shred-btn {{shredding ? 'disabled' : ''}}" bindtap="onShred">
+      <text>点击粉碎</text>
+      <image class="shred-icon" src="/images/icons/file-shred-line.png" mode="aspectFit"></image>
+    </view>
+
+    <!-- 碎纸条动画 -->
+    <view class="paper-strips {{shredding ? 'animating' : ''}}">
+      <view class="strip" wx:for="{{strips}}" wx:key="index"
+        style="animation-delay: {{item.delay}}ms; left: {{item.left}}rpx; height: {{item.height}}rpx;">
+      </view>
+    </view>
+  </view>
+
+  <!-- 碎纸堆 -->
+  <view class="paper-pile {{showPile ? 'visible' : ''}}">
+    <view class="pile-piece" wx:for="{{12}}" wx:key="index"></view>
+  </view>
+
+</view>

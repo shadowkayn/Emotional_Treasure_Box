@@ -1,3 +1,21 @@
-<block>清醒页面</block>
+<view class="container">
+  <!-- 背景图 -->
+  <image class="bg-image" src="{{bgImage}}" mode="aspectFill"></image>
 
-<custom-tabbar></custom-tabbar>
+  <!-- 音乐按钮 -->
+  <view class="music-btn {{musicPlaying ? 'rotating' : ''}}" bindtap="toggleMusic">
+    <image src="/images/icons/music.png" mode="aspectFit"></image>
+  </view>
+
+  <!-- 语录内容区 -->
+  <view class="quote-wrapper">
+    <view class="quote-text">{{quote}}</view>
+    <view class="quote-author">—— {{author}}</view>
+  </view>
+
+  <!-- 生成日签按钮 -->
+  <view class="share-btn" bindtap="generateDailyCard">
+    <text>生成日签分享</text>
+  </view>
+
+</view>

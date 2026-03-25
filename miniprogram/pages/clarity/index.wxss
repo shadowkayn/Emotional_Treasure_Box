@@ -1,1 +1,94 @@
-/* pages/clarity/index.wxss */
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* 音乐按钮 */
+.music-btn {
+  position: absolute;
+  top: 80rpx;
+  right: 40rpx;
+  width: 64rpx;
+  height: 64rpx;
+  z-index: 10;
+  background: rgba(231, 226, 208, 0.8);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-btn image {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.music-btn.rotating {
+  animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 语录区域 */
+.quote-wrapper {
+  position: relative;
+  z-index: 5;
+  margin-top: 30vh;
+  padding: 0 80rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.quote-text {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #2c2c2c;
+  line-height: 1.8;
+  letter-spacing: 4rpx;
+}
+
+.quote-author {
+  margin-top: 40rpx;
+  font-size: 32rpx;
+  color: #4a4a4a;
+  text-align: right;
+}
+
+/* 生成日签按钮 */
+.share-btn {
+  position: absolute;
+  bottom: 300rpx;
+  z-index: 10;
+  padding: 24rpx 60rpx;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 50rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  font-family: 'ZCool', serif;
+  font-weight: bold;
+  /*金色描边样式*/
+  text-shadow: 0 0 1rpx #88eef1;
+}
+
+.share-btn text {
+  font-size: 30rpx;
+  color: #3a3a3a;
+  letter-spacing: 4rpx;
+}

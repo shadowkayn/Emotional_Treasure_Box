@@ -1,66 +1,55 @@
-// pages/clarity/index.js
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    quote: '世界只是志向和表象，你的痛苦来源于对不可控之物的过度执着。',
+    author: '叔本华',
+    bgImage: '/images/clarity-bg.jpg',
+    musicPlaying: true
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
+  onLoad() {
+    this.fetchQuote();
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
   onShow() {
-
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0 });
+    }
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
+  // 获取每日语录
+  fetchQuote() {
+    wx.cloud.callFunction({
+      name: 'getDailyQuoteFunctions'
+    }).then(res => {
+      if (res.result && res.result.data && res.result.data.length > 0) {
+        const item = res.result.data[0];
+        this.setData({
+          quote: item.content || this.data.quote,
+          author: item.author || this.data.author
+        });
+      }
+    }).catch(err => {
+      console.error('获取语录失败', err);
+    });
   },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
+  // 切换音乐
+  toggleMusic() {
+    const playing = !this.data.musicPlaying;
+    this.setData({ musicPlaying: playing });
+    // TODO: 实现背景音乐播放/暂停
   },
 
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
+  // 生成日签分享
+  generateDailyCard() {
+    // TODO: 实现日签生成与分享
+    wx.showToast({ title: '日签生成中...', icon: 'loading' });
   },
 
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
   onShareAppMessage() {
-
+    return {
+      title: this.data.quote,
+      path: '/pages/clarity/index'
+    };
   }
-})
+});
