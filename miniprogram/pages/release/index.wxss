@@ -10,10 +10,11 @@
 
 .container-inner {
   width: 100%;
-  height: 1000rpx;
   background-color: #f1f7f7;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
   border-radius: 32rpx;
+  padding-bottom: 40rpx;
+  overflow: hidden;
 }
 
 .title {
@@ -28,7 +29,7 @@
 /* 输入卡片 */
 .card {
   margin: 40rpx 30rpx;
-  height: 360rpx;
+  height: 280rpx;
   background: #fff;
   border-radius: 24rpx;
   padding: 36rpx;
@@ -43,125 +44,211 @@
   line-height: 1.8;
 }
 
-/* 碎纸机 */
-.shredder-wrapper {
-  margin-top: 60rpx;
+/* ========== 碎纸机区域 ========== */
+.shredder-zone {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
+  margin-top: 20rpx;
+  height: 500rpx;
 }
 
-.shredder-slot {
-  width: 240rpx;
-  height: 80rpx;
-  background: #f7f3e7;
-  border: 1rpx solid #e8e4db;
+/* 纸张 */
+.paper {
+  width: 200rpx;
+  height: 120rpx;
+  background: #fff;
+  border: 2rpx solid #c5d4e0;
+  border-radius: 4rpx;
+  position: relative;
+  z-index: 3;
+  transition: height 0.8s ease-in, opacity 0.3s ease;
+}
+
+.paper-fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36rpx;
+  height: 36rpx;
+  background: linear-gradient(135deg, #e0eaf0 50%, #fff 50%);
+  border-bottom-left-radius: 4rpx;
+}
+
+.paper.feeding {
+  height: 0rpx;
+  opacity: 0;
+}
+
+/* 碎纸机机身 */
+.machine {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -8rpx;
+}
+
+.machine-slot {
+  width: 260rpx;
+  height: 16rpx;
+  background: #b8ccd8;
   border-radius: 8rpx 8rpx 0 0;
 }
 
-.shred-btn {
-  width: 320rpx;
-  height: 88rpx;
-  background: linear-gradient(180deg, #c8d8d4 0%, #a8bfb8 100%);
-  border-radius: 48rpx;
+.machine-body {
+  width: 300rpx;
+  height: 100rpx;
+  background: linear-gradient(180deg, #dce8ef 0%, #c5d5e0 100%);
+  border: 2rpx solid #b0c4d0;
+  border-radius: 12rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-  border: 1rpx solid #61615f;
+}
+
+.shred-btn {
+  width: 220rpx;
+  height: 64rpx;
+  background: linear-gradient(180deg, #8ea8c0 0%, #7a96ad 100%);
+  border-radius: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shred-btn text {
+  font-size: 28rpx;
+  color: #fff;
+  letter-spacing: 4rpx;
+  font-weight: 500;
 }
 
 .shred-btn.disabled {
   opacity: 0.6;
-  pointer-events: none;
 }
 
-.shred-btn text {
-  font-size: 30rpx;
-  color: #3a3a3a;
-  letter-spacing: 4rpx;
-}
-
-.shred-icon {
-  width: 36rpx;
-  height: 36rpx;
-}
-
-/* 碎纸条 */
-.paper-strips {
-  position: relative;
+.machine-bottom {
   width: 280rpx;
-  height: 0;
-  overflow: visible;
+  height: 24rpx;
+  background: #c5d5e0;
+  border-radius: 0 0 4rpx 4rpx;
+  display: flex;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 0 16rpx;
+  border-top: 2rpx solid #b0c4d0;
+}
+
+.teeth {
+  width: 10rpx;
+  height: 24rpx;
+  background: #aec0cc;
+  border-radius: 0 0 3rpx 3rpx;
+}
+
+/* ========== 碎纸条 ========== */
+.strips-zone {
+  position: relative;
+  width: 260rpx;
+  height: 140rpx;
+  z-index: 1;
 }
 
 .strip {
   position: absolute;
   top: 0;
-  width: 12rpx;
+  width: 8rpx;
   height: 0;
-  background: #d4e2e3;
-  border-radius: 0 0 4rpx 4rpx;
+  background: linear-gradient(180deg, #d0dde6, #e8eff4);
+  border: 1rpx solid #bccdd8;
+  border-radius: 0 0 2rpx 2rpx;
   opacity: 0;
 }
 
-.paper-strips.animating .strip {
-  animation: stripFall 1.2s ease-in forwards;
+.strips-zone.animating .strip {
+  animation: stripGrow 1s ease-out forwards;
 }
 
-@keyframes stripFall {
+@keyframes stripGrow {
   0% {
     height: 0;
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 0;
   }
-  30% {
-    height: 180rpx;
+  20% {
+    opacity: 1;
+  }
+  60% {
+    height: 120rpx;
     opacity: 1;
   }
   100% {
-    height: 180rpx;
-    opacity: 0;
-    transform: translateY(260rpx);
+    height: 120rpx;
+    opacity: 0.6;
+    transform: translateY(20rpx);
   }
 }
 
-/* 碎纸堆 */
-.paper-pile {
-  margin-top: 20rpx;
-  width: 340rpx;
-  height: 80rpx;
-  position: relative;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  margin: 0 auto;
+/* ========== 飘落碎纸片 ========== */
+.confetti-zone {
+  position: absolute;
+  top: 340rpx;
+  width: 320rpx;
+  height: 200rpx;
+  z-index: 1;
 }
 
-.paper-pile.visible {
+.confetti {
+  position: absolute;
+  top: 0;
+  width: 16rpx;
+  height: 20rpx;
+  border: 2rpx solid #9bb5c8;
+  border-radius: 3rpx;
+  background: rgba(200, 218, 230, 0.5);
+  opacity: 0;
+}
+
+.confetti-zone.animating .confetti {
+  animation: confettiFall 1.6s ease-in forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg) scale(0.5);
+  }
+  15% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(180rpx) rotate(360deg) scale(1);
+  }
+}
+
+/* ========== 碎纸堆 ========== */
+.pile {
+  position: absolute;
+  bottom: 0;
+  width: 360rpx;
+  height: 100rpx;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.pile.visible {
   opacity: 1;
 }
 
 .pile-piece {
   position: absolute;
-  bottom: 0;
-  width: 24rpx;
-  height: 60rpx;
-  background: #e8e4db;
-  border-radius: 4rpx;
-  transform: rotate(var(--r, 0deg));
+  background: #dce8ef;
+  border: 1rpx solid #bccdd8;
+  border-radius: 3rpx;
 }
-
-.pile-piece:nth-child(1)  { left: 20rpx;  --r: -15deg; height: 50rpx; }
-.pile-piece:nth-child(2)  { left: 50rpx;  --r: 10deg;  height: 65rpx; }
-.pile-piece:nth-child(3)  { left: 80rpx;  --r: -8deg;  height: 55rpx; }
-.pile-piece:nth-child(4)  { left: 110rpx; --r: 20deg;  height: 45rpx; }
-.pile-piece:nth-child(5)  { left: 140rpx; --r: -12deg; height: 60rpx; }
-.pile-piece:nth-child(6)  { left: 165rpx; --r: 5deg;   height: 50rpx; }
-.pile-piece:nth-child(7)  { left: 190rpx; --r: -18deg; height: 55rpx; }
-.pile-piece:nth-child(8)  { left: 215rpx; --r: 14deg;  height: 48rpx; }
-.pile-piece:nth-child(9)  { left: 240rpx; --r: -6deg;  height: 62rpx; }
-.pile-piece:nth-child(10) { left: 265rpx; --r: 11deg;  height: 52rpx; }
-.pile-piece:nth-child(11) { left: 290rpx; --r: -20deg; height: 46rpx; }
-.pile-piece:nth-child(12) { left: 310rpx; --r: 8deg;   height: 58rpx; }

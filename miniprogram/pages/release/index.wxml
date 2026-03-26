@@ -17,27 +17,48 @@
     </view>
 
     <!-- 碎纸机区域 -->
-    <view class="shredder-wrapper">
-      <!-- 纸张进入口 -->
-      <view class="shredder-slot"></view>
-
-      <!-- 粉碎按钮 -->
-      <view class="shred-btn {{shredding ? 'disabled' : ''}}" bindtap="onShred">
-        <text>点击粉碎</text>
-        <image class="shred-icon" src="/images/icons/file-shred.png" mode="aspectFit"></image>
+    <view class="shredder-zone">
+      <!-- 纸张（进入碎纸机的纸） -->
+      <view class="paper {{shredding ? 'feeding' : ''}}">
+        <view class="paper-fold"></view>
       </view>
 
-      <!-- 碎纸条动画 -->
-      <view class="paper-strips {{shredding ? 'animating' : ''}}">
-        <view class="strip" wx:for="{{strips}}" wx:key="index"
-          style="animation-delay: {{item.delay}}ms; left: {{item.left}}rpx; height: {{item.height}}rpx;">
+      <!-- 碎纸机机身 -->
+      <view class="machine">
+        <!-- 入纸口 -->
+        <view class="machine-slot"></view>
+        <!-- 机身上半 -->
+        <view class="machine-body">
+          <view class="shred-btn {{shredding ? 'disabled' : ''}}" bindtap="onShred">
+            <text>粉碎</text>
+          </view>
+        </view>
+        <!-- 机身底部出纸口 -->
+        <view class="machine-bottom">
+          <view class="teeth" wx:for="{{13}}" wx:key="index"></view>
         </view>
       </view>
-    </view>
 
-    <!-- 碎纸堆 -->
-    <view class="paper-pile {{showPile ? 'visible' : 'visible'}}">
-      <view class="pile-piece" wx:for="{{12}}" wx:key="index"></view>
+      <!-- 碎纸条（从机器底部出来的长条） -->
+      <view class="strips-zone {{shredding ? 'animating' : ''}}">
+        <view class="strip" wx:for="{{strips}}" wx:key="index"
+          style="left:{{item.left}}rpx; animation-delay:{{item.delay}}ms;">
+        </view>
+      </view>
+
+      <!-- 飘落的碎纸片 -->
+      <view class="confetti-zone {{shredding ? 'animating' : ''}}">
+        <view class="confetti" wx:for="{{confetti}}" wx:key="index"
+          style="left:{{item.left}}rpx; animation-delay:{{item.delay}}ms; transform:rotate({{item.rotate}}deg);">
+        </view>
+      </view>
+
+      <!-- 底部碎纸堆 -->
+      <view class="pile {{showPile ? 'visible' : ''}}">
+        <view class="pile-piece" wx:for="{{pileItems}}" wx:key="index"
+          style="left:{{item.left}}rpx; bottom:{{item.bottom}}rpx; width:{{item.w}}rpx; height:{{item.h}}rpx; transform:rotate({{item.r}}deg);">
+        </view>
+      </view>
     </view>
   </view>
 </view>

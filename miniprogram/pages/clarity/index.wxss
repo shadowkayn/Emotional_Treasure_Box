@@ -20,8 +20,8 @@
 /* 音乐按钮 */
 .music-btn {
   position: absolute;
-  top: 80rpx;
-  right: 40rpx;
+  top: 20rpx;
+  right: 24rpx;
   width: 64rpx;
   height: 64rpx;
   z-index: 10;
@@ -51,8 +51,8 @@
 .quote-wrapper {
   position: relative;
   z-index: 5;
-  margin-top: 30vh;
-  padding: 0 80rpx;
+  margin-top: 38vh;
+  padding: 0 30rpx 0 180rpx;
   width: 100%;
   box-sizing: border-box;
 }
@@ -60,9 +60,11 @@
 .quote-text {
   font-size: 40rpx;
   font-weight: 600;
+  font-style: italic;
   color: #2c2c2c;
   line-height: 1.8;
   letter-spacing: 4rpx;
+  text-shadow: 0 0 5rpx rgb(99 195 11);
 }
 
 .quote-author {

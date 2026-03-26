@@ -3,11 +3,13 @@ Page({
     content: '',
     shredding: false,
     showPile: false,
-    strips: []
+    strips: [],
+    confetti: [],
+    pileItems: []
   },
 
   onLoad() {
-    this.generateStrips();
+    this.generateParts();
   },
 
   onShow() {
@@ -16,24 +18,45 @@ Page({
     }
   },
 
-  // 生成碎纸条数据
-  generateStrips() {
+  generateParts() {
+    // 碎纸条 — 均匀分布在机器底部
     const strips = [];
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 15; i++) {
       strips.push({
-        delay: Math.floor(Math.random() * 300),
-        left: 10 + i * 20,
-        height: 140 + Math.floor(Math.random() * 80)
+        left: 8 + i * 17,
+        delay: Math.floor(Math.random() * 200)
       });
     }
-    this.setData({ strips });
+
+    // 飘落碎纸片
+    const confetti = [];
+    for (let i = 0; i < 18; i++) {
+      confetti.push({
+        left: Math.floor(Math.random() * 290),
+        delay: 300 + Math.floor(Math.random() * 800),
+        rotate: Math.floor(Math.random() * 360)
+      });
+    }
+
+    // 碎纸堆
+    const pileItems = [];
+    for (let i = 0; i < 30; i++) {
+      pileItems.push({
+        left: Math.floor(Math.random() * 320),
+        bottom: Math.floor(Math.random() * 50),
+        w: 12 + Math.floor(Math.random() * 24),
+        h: 10 + Math.floor(Math.random() * 20),
+        r: Math.floor(Math.random() * 360)
+      });
+    }
+
+    this.setData({ strips, confetti, pileItems });
   },
 
   onInput(e) {
     this.setData({ content: e.detail.value });
   },
 
-  // 点击粉碎
   onShred() {
     if (!this.data.content.trim()) {
       wx.showToast({ title: '先写下你的焦虑吧', icon: 'none' });
@@ -41,21 +64,18 @@ Page({
     }
 
     this.setData({ shredding: true, showPile: false });
-    this.generateStrips();
+    this.generateParts();
 
-    // 碎纸条动画结束后显示碎纸堆
+    // 碎纸堆出现
     setTimeout(() => {
       this.setData({ showPile: true });
-    }, 800);
+    }, 1000);
 
     // 动画完成后重置
     setTimeout(() => {
-      this.setData({
-        content: '',
-        shredding: false
-      });
+      this.setData({ content: '', shredding: false });
       wx.showToast({ title: '焦虑已粉碎', icon: 'success' });
-    }, 1500);
+    }, 2000);
   },
 
   onShareAppMessage() {

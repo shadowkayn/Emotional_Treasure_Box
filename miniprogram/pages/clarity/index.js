@@ -2,7 +2,7 @@ Page({
   data: {
     quote: '世界只是志向和表象，你的痛苦来源于对不可控之物的过度执着。',
     author: '叔本华',
-    bgImage: '/images/clarity-bg.jpg',
+    bgImage: '/images/clarity-n-bk.png',
     musicPlaying: true
   },
 
