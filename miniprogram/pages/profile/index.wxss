@@ -1,1 +1,108 @@
-/* pages/profile/index.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #A8C8CA 0%, #D5E5E3 100%);
+  padding: 60rpx 40rpx 180rpx;
+  overflow: hidden;
+}
+
+/* 头部用户信息 */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 60rpx;
+}
+
+.avatar-wrap {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: #fff;
+  border: 4rpx solid rgba(255,255,255,0.8);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.avatar {
+  width: 160rpx;
+  height: 160rpx;
+}
+
+.nickname {
+  margin-left: 40rpx;
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  letter-spacing: 2rpx;
+}
+
+/* 功能卡片 */
+.card {
+  background: rgba(255,255,255,0.85);
+  border-radius: 32rpx;
+  padding: 0 40rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.06);
+  margin-bottom: 60rpx;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx 0;
+  border-bottom: 1rpx solid rgba(0,0,0,0.06);
+}
+
+.menu-item-last {
+  border-bottom: none;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  font-size: 48rpx;
+  margin-right: 24rpx;
+}
+
+.menu-text {
+  font-size: 32rpx;
+  color: #3a5060;
+  font-weight: 500;
+}
+
+.arrow {
+  font-size: 56rpx;
+  color: #b0bec5;
+  font-weight: 300;
+}
+
+/* 分享按钮 */
+.share-btn {
+  width: 500rpx;
+  white-space: nowrap;
+  height: 96rpx;
+  background: rgba(90,122,138,0.85);
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 6rpx 20rpx rgba(90,122,138,0.3);
+  border: none;
+}
+
+.share-btn::after {
+  border: none;
+}
+
+.share-btn text {
+  font-size: 32rpx;
+  color: #fff;
+  letter-spacing: 4rpx;
+  font-weight: 500;
+}

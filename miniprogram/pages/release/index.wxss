@@ -6,6 +6,7 @@
   align-items: center;
   padding: 130rpx 50rpx 190rpx 50rpx;
   width: 100%;
+  overflow: hidden;
 }
 
 .container-inner {
@@ -42,6 +43,7 @@
   font-size: 30rpx;
   color: #333;
   line-height: 1.8;
+  font-family: 'ZCool', serif;
 }
 
 /* ========== 碎纸机区域 ========== */

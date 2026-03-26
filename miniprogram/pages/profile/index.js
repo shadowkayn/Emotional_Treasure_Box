@@ -1,68 +1,37 @@
 // pages/profile/index.js
 Page({
+  data: {},
 
-  /**
-   * 页面的初始数据
-   */
-  data: {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 });
     }
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
+  goToFavorites() {
+    wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
+  goToHistory() {
+    wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
+  goToBreathStats() {
+    wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
+  goToMoodChart() {
+    wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 
-  /**
-   * 用户点击右上角分享
-   */
+  goToSettings() {
+    wx.showToast({ title: '功能开发中', icon: 'none' });
+  },
+
   onShareAppMessage() {
-
+    return {
+      title: '情绪宝藏盒 - 你的情绪观察员',
+      path: '/pages/clarity/index'
+    };
   }
 })

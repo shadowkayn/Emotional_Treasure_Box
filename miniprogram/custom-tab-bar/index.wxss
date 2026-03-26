@@ -21,8 +21,8 @@
 }
 
 .tab-icon {
-  width: 66rpx;
-  height: 66rpx;
+  width: 44rpx;
+  height: 44rpx;
   margin-bottom: 2rpx;
 }
 
@@ -32,8 +32,9 @@
 }
 
 .tab-text {
-  font-size: 36rpx;
+  font-size: 28rpx;
   color: #AAABB8;
+  font-family: 'ZCool', serif;
 }
 
 .tab-item.selected .tab-text {

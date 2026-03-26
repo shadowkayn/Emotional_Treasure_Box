@@ -2,11 +2,21 @@ Page({
   data: {
     quote: '世界只是志向和表象，你的痛苦来源于对不可控之物的过度执着。',
     author: '叔本华',
-    bgImage: '/images/clarity-n-bk.png',
+    bgImage: 'https://res.cloudinary.com/kayn-admin-cloud/image/upload/v1774504376/clarity-n-bk_vwvqmq.png',
     musicPlaying: true
   },
 
   onLoad() {
+    // 确保字体已加载
+    if (!getApp().globalData.fontLoaded) {
+      wx.loadFontFace({
+        global: true,
+        family: 'ZCool',
+        source: 'url("https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/ZCOOLXiaoWei-Regular.ttf?sign=be4f7acf59284a3b5664207d93f7be6b&t=1774507304")',
+        success: () => console.log('页面级字体加载成功'),
+        fail: (err) => console.error('页面级字体加载失败', err)
+      });
+    }
     this.fetchQuote();
   },
 
