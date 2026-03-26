@@ -14,6 +14,7 @@
   margin-top: 80rpx;
   width: 100%;
   text-align: center;
+  z-index: 3;
 }
 
 .title {
@@ -32,81 +33,115 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
 
-/* 波浪层 */
-.h-wave {
+/* ========== 横向波浪拉丝动画 ========== */
+.silk-wave-wrap {
   position: absolute;
-  border-radius: 45%;
-  opacity: 0.15;
-  border: 2rpx solid rgba(255,255,255,0.4);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
 }
 
-.h-wave-1 {
-  width: 460rpx;
-  height: 460rpx;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.3) 0%, transparent 70%);
+.silk-line {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 4rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.05) 10%,
+    rgba(255,255,255,0.45) 30%,
+    rgba(255,255,255,0.7) 50%,
+    rgba(255,255,255,0.45) 70%,
+    rgba(255,255,255,0.05) 90%,
+    transparent 100%
+  );
+  filter: blur(1rpx);
+  animation: silkFloat 6s ease-in-out infinite;
 }
 
-.h-wave-2 {
-  width: 500rpx;
-  height: 500rpx;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.2) 0%, transparent 70%);
+.silk-line-1 {
+  top: 32%;
+  height: 3rpx;
+  opacity: 0.35;
+  animation-duration: 7s;
+  animation-delay: 0s;
 }
 
-.h-wave-3 {
-  width: 540rpx;
-  height: 540rpx;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.15) 0%, transparent 70%);
+.silk-line-2 {
+  top: 40%;
+  height: 5rpx;
+  opacity: 0.55;
+  animation-duration: 5.5s;
+  animation-delay: -1s;
 }
 
-.h-wave.active {
-  animation-fill-mode: both;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+.silk-line-3 {
+  top: 48%;
+  height: 6rpx;
+  opacity: 0.7;
+  animation-duration: 6s;
+  animation-delay: -2.5s;
 }
 
-.h-wave-1.active {
-  animation: waveRotate1 6s linear infinite, waveBreathe 8s ease-in-out infinite;
+.silk-line-4 {
+  top: 52%;
+  height: 5rpx;
+  opacity: 0.6;
+  animation-duration: 7.5s;
+  animation-delay: -0.8s;
 }
 
-.h-wave-2.active {
-  animation: waveRotate2 8s linear infinite, waveBreathe 8s ease-in-out 0.5s infinite;
+.silk-line-5 {
+  top: 58%;
+  height: 4rpx;
+  opacity: 0.45;
+  animation-duration: 6.5s;
+  animation-delay: -3s;
 }
 
-.h-wave-3.active {
-  animation: waveRotate3 10s linear infinite, waveBreathe 8s ease-in-out 1s infinite;
+.silk-line-6 {
+  top: 44%;
+  height: 3rpx;
+  opacity: 0.3;
+  animation-duration: 8s;
+  animation-delay: -1.5s;
 }
 
-@keyframes waveRotate1 {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+.silk-line-7 {
+  top: 62%;
+  height: 3rpx;
+  opacity: 0.25;
+  animation-duration: 7s;
+  animation-delay: -4s;
 }
 
-@keyframes waveRotate2 {
-  from { transform: rotate(120deg); }
-  to   { transform: rotate(-240deg); }
-}
-
-@keyframes waveRotate3 {
-  from { transform: rotate(240deg); }
-  to   { transform: rotate(600deg); }
-}
-
-@keyframes waveBreathe {
-  0%, 100% {
-    opacity: 0.1;
-    border-radius: 45%;
+@keyframes silkFloat {
+  0% {
+    transform: translateY(0rpx) scaleY(1);
   }
-  25% {
-    border-radius: 42% 48% 44% 46%;
+  20% {
+    transform: translateY(-18rpx) scaleY(1.3);
   }
-  50% {
-    opacity: 0.3;
-    border-radius: 47% 43% 46% 44%;
+  40% {
+    transform: translateY(12rpx) scaleY(0.8);
   }
-  75% {
-    border-radius: 44% 46% 42% 48%;
+  60% {
+    transform: translateY(-8rpx) scaleY(1.15);
+  }
+  80% {
+    transform: translateY(14rpx) scaleY(0.9);
+  }
+  100% {
+    transform: translateY(0rpx) scaleY(1);
   }
 }
 
@@ -201,6 +236,7 @@
   flex-direction: column;
   align-items: center;
   min-height: 120rpx;
+  z-index: 3;
 }
 
 .hint-text {
@@ -228,6 +264,7 @@
   background: rgba(255,255,255,0.5);
   border-radius: 40rpx;
   padding: 8rpx;
+  z-index: 3;
 }
 
 .duration-item {
@@ -258,6 +295,7 @@
   background: rgba(255,255,255,0.7);
   border-radius: 40rpx;
   box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06);
+  z-index: 3;
 }
 
 .action-btn text {

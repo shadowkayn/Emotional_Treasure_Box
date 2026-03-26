@@ -4,15 +4,6 @@
     <text class="title">{{durations[durationIndex]}}分钟极简呼吸</text>
   </view>
 
-  <!-- 横向波浪背景 -->
-  <view class="wave-container">
-    <view class="h-wave h-wave-1"></view>
-    <view class="h-wave h-wave-2"></view>
-    <view class="h-wave h-wave-3"></view>
-    <view class="h-wave h-wave-4"></view>
-    <view class="h-wave h-wave-5"></view>
-  </view>
-
   <!-- 呼吸球区域 -->
   <view class="breath-area">
     <!-- 外层光晕 -->
@@ -21,6 +12,25 @@
     <view class="orb {{breathing ? 'active' : ''}}"></view>
     <!-- 内层光点 -->
     <view class="orb-inner {{breathing ? 'active' : ''}}"></view>
+  </view>
+
+  <!-- 横向波浪拉丝（每条线由20个点组成波浪） -->
+  <view class="silk-wave-wrap">
+    <view class="silk-row silk-row-1">
+      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
+    </view>
+    <view class="silk-row silk-row-2">
+      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
+    </view>
+    <view class="silk-row silk-row-3">
+      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
+    </view>
+    <view class="silk-row silk-row-4">
+      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
+    </view>
+    <view class="silk-row silk-row-5">
+      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
+    </view>
   </view>
 
   <!-- 呼吸提示文字 -->
