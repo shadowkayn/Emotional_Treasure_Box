@@ -4,7 +4,8 @@
     "pages/release/index",
     "pages/breathe/index",
     "pages/profile/index",
-    "pages/favorites/index"
+    "pages/favorites/index",
+    "pages/anxiety-history/index"
   ],
   "window": {
     "navigationBarBackgroundColor": "#F9F7F7",

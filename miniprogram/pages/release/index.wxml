@@ -4,7 +4,7 @@
     <view class="header">
       <view class="title">写下你的焦虑</view>
       <view class="subtitle">让它在这里消失</view>
-      <view class="stats" wx:if="{{totalShredded > 0}}">
+      <view class="stats" wx:if="{{isLogin && totalShredded > 0}}">
         <text class="stats-text">已粉碎 {{totalShredded}} 次焦虑</text>
         <text class="stats-link" bindtap="viewHistory">查看历史</text>
       </view>

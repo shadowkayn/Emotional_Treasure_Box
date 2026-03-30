@@ -69,7 +69,15 @@ Page({
   },
 
   goToHistory() {
-    wx.showToast({ title: '功能开发中', icon: 'none' });
+    if (!this.data.isLogin) {
+      wx.showModal({
+        title: '需要登录',
+        content: '查看粉碎历史需要先登录',
+        showCancel: false
+      });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/anxiety-history/index' });
   },
 
   onShareAppMessage() {

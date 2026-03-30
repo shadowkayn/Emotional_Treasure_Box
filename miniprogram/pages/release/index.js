@@ -8,28 +8,46 @@ Page({
     strips: [],
     confetti: [],
     pileItems: [],
-    totalShredded: 0 // 统计粉碎次数
+    totalShredded: 0, // 统计粉碎次数
+    isLogin: false
   },
 
   onLoad() {
     this.generateParts();
-    this.loadShredCount();
+    this.checkLoginAndLoadCount();
   },
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 1 });
     }
+    // 每次显示页面时重新检查登录状态和加载数据
+    this.checkLoginAndLoadCount();
   },
 
-  // 加载粉碎次数
-  loadShredCount() {
-    try {
-      const count = wx.getStorageSync('shredCount') || 0;
-      this.setData({ totalShredded: count });
-    } catch (e) {
-      console.error('读取粉碎次数失败', e);
+  // 检查登录状态并加载粉碎次数
+  checkLoginAndLoadCount() {
+    const isLogin = checkLogin();
+    this.setData({ isLogin });
+    
+    if (isLogin) {
+      this.loadShredCountFromCloud();
+    } else {
+      this.setData({ totalShredded: 0 });
     }
+  },
+
+  // 从云数据库加载粉碎次数
+  loadShredCountFromCloud() {
+    const db = wx.cloud.database();
+    db.collection('AnxietyHistory')
+      .count()
+      .then(res => {
+        this.setData({ totalShredded: res.total });
+      })
+      .catch(err => {
+        console.error('加载粉碎次数失败', err);
+      });
   },
 
   generateParts() {
@@ -104,18 +122,16 @@ Page({
 
     // 动画完成后重置
     setTimeout(() => {
-      const newCount = this.data.totalShredded + 1;
       this.setData({ 
         content: '', 
-        shredding: false,
-        totalShredded: newCount
+        shredding: false
       });
       
-      // 保存粉碎次数
-      wx.setStorageSync('shredCount', newCount);
+      // 重新加载粉碎次数
+      this.loadShredCountFromCloud();
       
       wx.showToast({ 
-        title: `焦虑已粉碎 (${newCount})`, 
+        title: '焦虑已粉碎', 
         icon: 'success' 
       });
     }, 2000);
@@ -129,8 +145,10 @@ Page({
         content: content,
         createdAt: db.serverDate()
       }
+    }).then(() => {
+      console.log('✅ 焦虑记录保存成功');
     }).catch(err => {
-      console.error('保存历史失败', err);
+      console.error('❌ 保存历史失败', err);
     });
   },
 
@@ -139,7 +157,7 @@ Page({
     if (!checkLoginWithTip({ content: '查看历史记录需要先登录' })) {
       return;
     }
-    wx.showToast({ title: '历史记录功能开发中', icon: 'none' });
+    wx.navigateTo({ url: '/pages/anxiety-history/index' });
   },
 
   onShareAppMessage() {
