@@ -1,3 +1,5 @@
+const { checkLogin, checkLoginWithTip } = require('../../utils/index');
+
 Page({
   data: {
     content: '',
@@ -5,16 +7,28 @@ Page({
     showPile: false,
     strips: [],
     confetti: [],
-    pileItems: []
+    pileItems: [],
+    totalShredded: 0 // 统计粉碎次数
   },
 
   onLoad() {
     this.generateParts();
+    this.loadShredCount();
   },
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 1 });
+    }
+  },
+
+  // 加载粉碎次数
+  loadShredCount() {
+    try {
+      const count = wx.getStorageSync('shredCount') || 0;
+      this.setData({ totalShredded: count });
+    } catch (e) {
+      console.error('读取粉碎次数失败', e);
     }
   },
 
@@ -58,24 +72,74 @@ Page({
   },
 
   onShred() {
+    // 检查登录状态
+    if (!checkLoginWithTip({ content: '粉碎焦虑功能需要登录后使用' })) {
+      return;
+    }
+
     if (!this.data.content.trim()) {
       wx.showToast({ title: '先写下你的焦虑吧', icon: 'none' });
       return;
     }
 
+    // 震动反馈
+    wx.vibrateShort({ type: 'medium' });
+
+    // 播放音效（需要上传音频文件到云存储）
+    const innerAudioContext = wx.createInnerAudioContext();
+    innerAudioContext.src = 'https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/shred-sound.mp3'; // 替换为实际音频URL
+    innerAudioContext.play();
+
     this.setData({ shredding: true, showPile: false });
     this.generateParts();
+
+    // 保存到历史记录
+    this.saveToHistory(this.data.content);
 
     // 碎纸堆出现
     setTimeout(() => {
       this.setData({ showPile: true });
+      wx.vibrateShort({ type: 'light' });
     }, 1000);
 
     // 动画完成后重置
     setTimeout(() => {
-      this.setData({ content: '', shredding: false });
-      wx.showToast({ title: '焦虑已粉碎', icon: 'success' });
+      const newCount = this.data.totalShredded + 1;
+      this.setData({ 
+        content: '', 
+        shredding: false,
+        totalShredded: newCount
+      });
+      
+      // 保存粉碎次数
+      wx.setStorageSync('shredCount', newCount);
+      
+      wx.showToast({ 
+        title: `焦虑已粉碎 (${newCount})`, 
+        icon: 'success' 
+      });
     }, 2000);
+  },
+
+  // 保存到历史记录
+  saveToHistory(content) {
+    const db = wx.cloud.database();
+    db.collection('AnxietyHistory').add({
+      data: {
+        content: content,
+        createdAt: db.serverDate()
+      }
+    }).catch(err => {
+      console.error('保存历史失败', err);
+    });
+  },
+
+  // 查看历史记录
+  viewHistory() {
+    if (!checkLoginWithTip({ content: '查看历史记录需要先登录' })) {
+      return;
+    }
+    wx.showToast({ title: '历史记录功能开发中', icon: 'none' });
   },
 
   onShareAppMessage() {
