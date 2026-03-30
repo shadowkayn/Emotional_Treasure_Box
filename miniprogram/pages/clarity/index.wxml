@@ -18,4 +18,29 @@
     <text>生成日签分享</text>
   </view>
 
+  <!-- 日签生成画布（隐藏） -->
+  <view style="position:fixed;left:-9999px;">
+    <wxml-to-canvas class="widget" id="dailyCard" width="450" height="800"></wxml-to-canvas>
+  </view>
+
+  <!-- 日签预览弹窗 - 3D翻牌效果 -->
+  <view class="card-modal" wx:if="{{showCardModal}}" bindtap="closeCardModal">
+    <view class="card-flip-container {{cardFlipped ? 'flipped' : ''}}" catchtap="">
+      <!-- 卡片背面 -->
+      <view class="card-face card-back">
+        <view class="card-back-pattern">
+          <view class="pattern-circle"></view>
+          <text class="pattern-text">✦ 今日清醒 ✦</text>
+        </view>
+      </view>
+      <!-- 卡片正面 -->
+      <view class="card-face card-front">
+        <image class="card-preview" src="{{cardImagePath}}" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="card-actions" wx:if="{{cardFlipped}}">
+      <button class="save-btn" catchtap="saveCardToAlbum">保存到相册</button>
+    </view>
+  </view>
+
 </view>
