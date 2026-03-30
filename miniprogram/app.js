@@ -17,11 +17,12 @@ App({
       });
     }
 
-    // 加载自定义字体
+    // 加载自定义字体（scopes 包含 native 以支持 Canvas 2D）
     wx.loadFontFace({
       global: true,
       family: 'ZCool',
-      source: 'url("https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/ZCOOLXiaoWei-Regular.ttf?sign=a645ca3ecd69458b701cc3c2b9261ea0&t=1774508690")',
+      source: 'url("https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/ZCOOLXiaoWei-Regular.ttf?sign=f22d2dd0454db96a8f58cc4843fd1d77&t=1774856385")',
+      scopes: ['webview', 'native'],
       success: (res) => {
         console.log('✅ 字体加载成功', res);
         this.globalData.fontLoaded = true;

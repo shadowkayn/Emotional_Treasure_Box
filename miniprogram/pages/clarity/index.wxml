@@ -20,7 +20,7 @@
 
   <!-- 日签生成画布（隐藏） -->
   <view style="position:fixed;left:-9999px;">
-    <wxml-to-canvas class="widget" id="dailyCard" width="450" height="800"></wxml-to-canvas>
+    <canvas type="2d" id="dailyCardCanvas" style="width:450px;height:800px;"></canvas>
   </view>
 
   <!-- 日签预览弹窗 - 3D翻牌效果 -->
