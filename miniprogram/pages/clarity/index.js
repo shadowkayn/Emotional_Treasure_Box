@@ -1,9 +1,20 @@
+const bgAudioManager = wx.getBackgroundAudioManager();
+
+// 音乐列表 - 上传到云存储后把 URL 填这里
+const MUSIC_LIST = [
+  { title: 'sacred play secret place', url: 'https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/Matryoshka%20-%20Sacred%20Play%20Secret%20Place.mp3?sign=e543edd8876bd4a60b311da26f4fc397&t=1774839236' },
+  // { title: '轻音乐2', url: '' },
+  // { title: '轻音乐3', url: '' },
+  // 可以继续添加更多...
+];
+
 Page({
   data: {
     quote: '世界只是志向和表象，你的痛苦来源于对不可控之物的过度执着。',
     author: '叔本华',
     bgImage: 'https://res.cloudinary.com/kayn-admin-cloud/image/upload/v1774504376/clarity-n-bk_vwvqmq.png',
-    musicPlaying: true
+    musicPlaying: true,
+    currentMusic: null
   },
 
   onLoad() {
@@ -18,6 +29,56 @@ Page({
       });
     }
     this.fetchQuote();
+    this.initBgMusic();
+  },
+
+  // 随机选一首音乐
+  getRandomMusic() {
+    const validList = MUSIC_LIST.filter(m => m.url);
+    if (validList.length === 0) return null;
+    const idx = Math.floor(Math.random() * validList.length);
+    return validList[idx];
+  },
+
+  // 初始化背景音乐
+  initBgMusic() {
+    bgAudioManager.onPlay(() => {
+      this.setData({ musicPlaying: true });
+    });
+    bgAudioManager.onPause(() => {
+      this.setData({ musicPlaying: false });
+    });
+    bgAudioManager.onStop(() => {
+      this.setData({ musicPlaying: false });
+    });
+    bgAudioManager.onEnded(() => {
+      // 播放完随机换一首
+      this.playRandomMusic();
+    });
+    bgAudioManager.onError((err) => {
+      console.error('音乐播放错误', err);
+      this.setData({ musicPlaying: false });
+    });
+
+    // 检查当前是否正在播放
+    if (bgAudioManager.paused === false) {
+      this.setData({ musicPlaying: true });
+    }
+  },
+
+  // 播放随机音乐
+  playRandomMusic() {
+    const music = this.getRandomMusic();
+    if (!music) {
+      wx.showToast({ title: '暂无音乐', icon: 'none' });
+      return;
+    }
+    this.setData({ currentMusic: music });
+    bgAudioManager.title = music.title;
+    bgAudioManager.epname = '情绪宝藏盒';
+    bgAudioManager.singer = '轻音乐';
+    bgAudioManager.coverImgUrl = this.data.bgImage;
+    bgAudioManager.src = music.url;
   },
 
   onShow() {
@@ -45,9 +106,16 @@ Page({
 
   // 切换音乐
   toggleMusic() {
-    const playing = !this.data.musicPlaying;
-    this.setData({ musicPlaying: playing });
-    // TODO: 实现背景音乐播放/暂停
+    if (this.data.musicPlaying) {
+      bgAudioManager.pause();
+    } else {
+      // 如果之前暂停了，继续播放；否则随机播放新的
+      if (bgAudioManager.src && bgAudioManager.paused) {
+        bgAudioManager.play();
+      } else {
+        this.playRandomMusic();
+      }
+    }
   },
 
   // 生成日签分享
