@@ -25,38 +25,34 @@ Page({
     });
   },
 
-  // 处理登录
+  // 一键登录（使用 wx.login 获取 openid）
   handleLogin() {
-    if (this.data.isLogin) return;
-
+    wx.showLoading({ title: '登录中...' });
+    
     const app = getApp();
     
-    // 先确保有 openid
-    if (!app.globalData.openid) {
-      wx.showLoading({ title: '初始化中...' });
-      app.autoLogin().then(() => {
-        wx.hideLoading();
-        this.getUserInfo();
-      }).catch(() => {
-        wx.hideLoading();
-        wx.showToast({ title: '登录失败', icon: 'none' });
-      });
-    } else {
-      this.getUserInfo();
-    }
-  },
-
-  // 获取用户信息
-  getUserInfo() {
-    const app = getApp();
-    app.getUserProfile().then(userInfo => {
+    app.login().then(openid => {
+      // 生成默认用户信息
+      const userInfo = {
+        avatarUrl: '/images/avatar.png',
+        nickName: '情绪观察员_' + openid.slice(-6)
+      };
+      
+      app.globalData.userInfo = userInfo;
+      wx.setStorageSync('userInfo', userInfo);
+      app.saveUserInfo(userInfo);
+      
+      wx.hideLoading();
       this.setData({
         userInfo: userInfo,
         isLogin: true
       });
+      
       wx.showToast({ title: '登录成功', icon: 'success' });
     }).catch(err => {
-      console.error('获取用户信息失败', err);
+      wx.hideLoading();
+      console.error('登录失败', err);
+      wx.showToast({ title: '登录失败，请重试', icon: 'none' });
     });
   },
 
@@ -65,12 +61,7 @@ Page({
       wx.showModal({
         title: '需要登录',
         content: '查看收藏需要先登录',
-        confirmText: '去登录',
-        success: (res) => {
-          if (res.confirm) {
-            this.handleLogin();
-          }
-        }
+        showCancel: false
       });
       return;
     }
@@ -78,18 +69,6 @@ Page({
   },
 
   goToHistory() {
-    wx.showToast({ title: '功能开发中', icon: 'none' });
-  },
-
-  goToBreathStats() {
-    wx.showToast({ title: '功能开发中', icon: 'none' });
-  },
-
-  goToMoodChart() {
-    wx.showToast({ title: '功能开发中', icon: 'none' });
-  },
-
-  goToSettings() {
     wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 

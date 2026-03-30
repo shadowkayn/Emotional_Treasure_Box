@@ -21,7 +21,7 @@ function checkLoginWithTip(options = {}) {
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
-          wx.navigateTo({ url: '/pages/profile/index' });
+          wx.switchTab({ url: '/pages/profile/index' });
         }
       }
     });

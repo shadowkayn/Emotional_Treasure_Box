@@ -157,6 +157,24 @@ const deleteRecord = async (event) => {
   }
 };
 
+// 获取手机号
+const getPhoneNumber = async (event) => {
+  const { code } = event;
+  try {
+    const result = await cloud.openapi.phonenumber.getPhoneNumber({
+      code: code
+    });
+    return {
+      phoneNumber: result.phoneInfo.phoneNumber,
+      purePhoneNumber: result.phoneInfo.purePhoneNumber,
+      countryCode: result.phoneInfo.countryCode
+    };
+  } catch (err) {
+    console.error('获取手机号失败', err);
+    throw err;
+  }
+};
+
 // const getOpenId = require('./getOpenId/index');
 // const getMiniProgramCode = require('./getMiniProgramCode/index');
 // const createCollection = require('./createCollection/index');
@@ -169,6 +187,8 @@ exports.main = async (event, context) => {
   switch (event.type) {
     case "getOpenId":
       return await getOpenId();
+    case "getPhoneNumber":
+      return await getPhoneNumber(event);
     case "getMiniProgramCode":
       return await getMiniProgramCode();
     case "createCollection":

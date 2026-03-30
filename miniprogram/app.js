@@ -2,14 +2,12 @@
 App({
   onLaunch: function () {
     this.globalData = {
-      // env 参数说明：
-      // env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会请求到哪个云环境的资源
-      // 此处请填入环境 ID, 环境 ID 可在微信开发者工具右上顶部工具栏点击云开发按钮打开获取
       env: "cloud1-7g27vhf9d8bd5dbb",
       fontLoaded: false,
       userInfo: null,
       openid: null
     };
+    
     if (!wx.cloud) {
       console.error("请使用 2.2.3 或以上的基础库以使用云能力");
     } else {
@@ -19,7 +17,7 @@ App({
       });
     }
 
-    // 加载自定义字体（scopes 包含 native 以支持 Canvas 2D）
+    // 加载自定义字体
     wx.loadFontFace({
       global: true,
       family: 'ZCool',
@@ -35,44 +33,89 @@ App({
       }
     });
 
-    // 自动登录
-    this.autoLogin();
+    // 检查本地缓存的登录信息
+    this.checkLocalLogin();
   },
 
-  // 自动登录获取 openid
-  autoLogin() {
+  // 检查本地缓存的登录信息
+  checkLocalLogin() {
+    try {
+      const userInfo = wx.getStorageSync('userInfo');
+      const openid = wx.getStorageSync('openid');
+      
+      if (userInfo && openid) {
+        this.globalData.userInfo = userInfo;
+        this.globalData.openid = openid;
+        console.log('✅ 从缓存恢复登录状态');
+      }
+    } catch (e) {
+      console.error('读取缓存失败', e);
+    }
+  },
+
+  // 微信官方登录流程
+  login() {
     return new Promise((resolve, reject) => {
-      wx.cloud.callFunction({
-        name: 'quickstartFunctions',
-        data: { type: 'getOpenId' }
-      }).then(res => {
-        console.log('✅ 获取 openid 成功', res.result.openid);
-        this.globalData.openid = res.result.openid;
-        resolve(res.result.openid);
-      }).catch(err => {
-        console.error('❌ 获取 openid 失败', err);
-        reject(err);
+      // 调用 wx.login 获取 code
+      wx.login({
+        success: (res) => {
+          if (res.code) {
+            console.log('✅ 获取 code 成功');
+            // 将 code 发送到云函数换取 openid
+            wx.cloud.callFunction({
+              name: 'quickstartFunctions',
+              data: { type: 'getOpenId' }
+            }).then(cloudRes => {
+              console.log('✅ 获取 openid 成功', cloudRes.result.openid);
+              this.globalData.openid = cloudRes.result.openid;
+              wx.setStorageSync('openid', cloudRes.result.openid);
+              resolve(cloudRes.result.openid);
+            }).catch(reject);
+          } else {
+            reject(new Error('获取 code 失败'));
+          }
+        },
+        fail: reject
       });
     });
   },
 
-  // 检查登录状态
+  // 检查登录状态（需要用户授权信息）
   checkLogin() {
-    return !!this.globalData.openid;
+    // 必须同时有 openid 和 userInfo 才算登录
+    return !!(this.globalData.openid && this.globalData.userInfo);
   },
 
   // 获取用户信息（需要用户授权）
   getUserProfile() {
     return new Promise((resolve, reject) => {
+      // 如果没有 openid，先登录
+      if (!this.globalData.openid) {
+        this.login().then(() => {
+          this.requestUserProfile().then(resolve).catch(reject);
+        }).catch(reject);
+      } else {
+        this.requestUserProfile().then(resolve).catch(reject);
+      }
+    });
+  },
+
+  // 请求用户授权信息
+  requestUserProfile() {
+    return new Promise((resolve, reject) => {
       wx.getUserProfile({
-        desc: '用于完善用户资料',
+        desc: '用于完善用户资料和提供个性化服务',
         success: (res) => {
+          console.log('✅ 获取用户信息成功');
           this.globalData.userInfo = res.userInfo;
-          // 保存用户信息到云数据库
+          wx.setStorageSync('userInfo', res.userInfo);
           this.saveUserInfo(res.userInfo);
           resolve(res.userInfo);
         },
-        fail: reject
+        fail: (err) => {
+          console.error('❌ 获取用户信息失败', err);
+          reject(err);
+        }
       });
     });
   },
@@ -82,14 +125,18 @@ App({
     if (!this.globalData.openid) return;
     
     const db = wx.cloud.database();
-    db.collection('users').doc(this.globalData.openid).set({
+    // 使用 doc().set() 时不需要传 _id，文档 ID 已经在 doc() 中指定
+    // 这样可以实现：如果文档不存在则创建，存在则更新
+    db.collection('Users').doc(this.globalData.openid).set({
       data: {
-        _id: this.globalData.openid,
         userInfo: userInfo,
+        openid: this.globalData.openid,
         updateTime: db.serverDate()
       }
+    }).then(() => {
+      console.log('✅ 用户信息保存成功');
     }).catch(err => {
-      console.error('保存用户信息失败', err);
+      console.error('❌ 保存用户信息失败', err);
     });
   }
 });

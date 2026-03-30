@@ -134,7 +134,7 @@ Page({
     const { quote, author, quoteId, isFavorited } = this.data;
 
     if (!isFavorited) {
-      // 添加收藏
+      // 添加收藏 - _openid 会自动添加
       try {
         await db.collection('UserFavorites').add({
           data: {
@@ -151,8 +151,9 @@ Page({
         wx.showToast({ title: '收藏失败', icon: 'none' });
       }
     } else {
-      // 取消收藏
+      // 取消收藏 - 只删除当前用户的收藏
       try {
+        const _ = db.command;
         await db.collection('UserFavorites').where({
           quote_id: quoteId
         }).remove();
@@ -165,15 +166,18 @@ Page({
     }
   },
 
-  // 检查云端收藏状态
+  // 检查云端收藏状态 - 只查询当前用户的收藏
   checkFavoriteStatus() {
     const db = wx.cloud.database();
     if (!this.data.quoteId) return;
 
+    // 云数据库会自动过滤当前用户的数据（基于 _openid）
     db.collection('UserFavorites').where({
       quote_id: this.data.quoteId
     }).count().then(res => {
       this.setData({ isFavorited: res.total > 0 });
+    }).catch(err => {
+      console.error('检查收藏状态失败', err);
     });
   },
 
