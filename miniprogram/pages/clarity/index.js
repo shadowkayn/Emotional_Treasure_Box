@@ -38,7 +38,7 @@ const CARD_BG_LIST = [
   // 极简抽象系列
   'https://images.unsplash.com/photo-1530912780732-0d2507ded3e8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWluaW1hbCUyMGxhbmRzY2FwZXxlbnwwfHwwfHx8MA%3D%3D?w=800&q=80', // 紫色渐变
   'https://images.unsplash.com/photo-1502790671504-542ad42d5189?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bWluaW1hbCUyMGxhbmRzY2FwZXxlbnwwfHwwfHx8MA%3D%3D', // 蓝绿渐变
-  'https://images.unsplash.com/photo-1502790671504-542ad42d5189?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bWluaW1hbCUyMGxhbmRzY2FwZXxlbnwwfHwwfHx8MA%3D%3D?w=800&q=80', // 粉蓝渐变
+  'https://images.unsplash.com/photo-1521433849537-1d4ead3ddaf9?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // 粉蓝渐变
   'https://images.unsplash.com/photo-1659775675138-b550c102bff3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1pbmltYWwlMjBsYW5kc2NhcGV8ZW58MHx8MHx8fDA%3D', // 彩色渐变
   'https://images.unsplash.com/photo-1625633720107-5b537b6457ca?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG1pbmltYWwlMjBsYW5kc2NhcGV8ZW58MHx8MHx8fDA%3D', // 流体艺术
 
@@ -52,8 +52,8 @@ const CARD_BG_LIST = [
 
 Page({
   data: {
-    quote: '世界只是志向和表象，你的痛苦来源于对不可控之物的过度执着。',
-    author: '叔本华',
+    quote: '',
+    author: '',
     bgImage: 'https://res.cloudinary.com/kayn-admin-cloud/image/upload/v1774504376/clarity-n-bk_vwvqmq.png',
     musicPlaying: false,
     currentMusic: null,
@@ -66,17 +66,6 @@ Page({
   },
 
   onLoad() {
-    // 确保字体已加载（包含 native scope 以支持 Canvas）
-    if (!getApp().globalData.fontLoaded) {
-      wx.loadFontFace({
-        global: true,
-        family: 'ZCool',
-        source: 'url("https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/ZCOOLXiaoWei-Regular.ttf?sign=f22d2dd0454db96a8f58cc4843fd1d77&t=1774856385")',
-        scopes: ['webview', 'native'],
-        success: () => console.log('页面级字体加载成功'),
-        fail: (err) => console.error('页面级字体加载失败', err)
-      });
-    }
     this.fetchQuote();
     this.initBgMusic();
     this.checkFavoriteStatus();
@@ -137,60 +126,92 @@ Page({
     }
   },
 
-  // 获取每日语录
+  // 获取每日语录（按日期精准匹配）
   fetchQuote() {
-    wx.cloud.callFunction({
-      name: 'getDailyQuoteFunctions'
-    }).then(res => {
-      if (res.result && res.result.data && res.result.data.length > 0) {
-        const item = res.result.data[0];
+    const db = wx.cloud.database();
+    const today = this.formatDate(new Date()).replace(/\./g, '-'); // 将 2026.04.01 转为 2026-04-01
+
+    db.collection('Quotes').where({
+      displayDate: today
+    }).get().then(res => {
+      if (res.data && res.data.length > 0) {
+        const item = res.data[0];
         this.setData({
-          quote: item.content || this.data.quote,
-          author: item.author || this.data.author
+          quote: item.content,
+          author: item.author,
+          quoteId: item._id // 记录ID，方便收藏使用
+        }, () => {
+          this.checkFavoriteStatus(); // 拿到语录后再检查收藏
         });
-        this.checkFavoriteStatus();
+      } else {
+        // 如果当天没配数据，随机拿一条兜底
+        this.fetchRandomQuote();
       }
     }).catch(err => {
-      console.error('获取语录失败', err);
+      console.error('数据库查询失败', err);
     });
   },
 
-  // 检查当前语录是否已收藏
-  checkFavoriteStatus() {
-    const favorites = wx.getStorageSync('favorites') || [];
-    const isFavorited = favorites.some(item => 
-      item.quote === this.data.quote && item.author === this.data.author
-    );
-    this.setData({ isFavorited });
+  // 兜底随机获取逻辑
+  fetchRandomQuote() {
+    const db = wx.cloud.database();
+    db.collection('Quotes').aggregate().sample({ size: 1 }).end().then(res => {
+      if (res.list.length > 0) {
+        const item = res.list[0];
+        this.setData({
+          quote: item.content,
+          author: item.author,
+          quoteId: item._id
+        });
+      }
+    });
   },
 
-  // 切换收藏状态
-  toggleFavorite() {
-    const favorites = wx.getStorageSync('favorites') || [];
-    const currentQuote = {
-      quote: this.data.quote,
-      author: this.data.author,
-      timestamp: Date.now(),
-      date: this.formatDate(new Date())
-    };
+  // 切换收藏状态（存入云数据库）
+  async toggleFavorite() {
+    const db = wx.cloud.database();
+    const { quote, author, quoteId, isFavorited } = this.data;
 
-    const index = favorites.findIndex(item => 
-      item.quote === currentQuote.quote && item.author === currentQuote.author
-    );
-
-    if (index > -1) {
-      // 已收藏，取消收藏
-      favorites.splice(index, 1);
-      wx.showToast({ title: '已取消收藏', icon: 'none' });
-      this.setData({ isFavorited: false });
+    if (!isFavorited) {
+      // 添加收藏
+      try {
+        await db.collection('UserFavorites').add({
+          data: {
+            quote_id: quoteId,
+            content: quote,
+            author: author,
+            createdAt: db.serverDate()
+          }
+        });
+        this.setData({ isFavorited: true });
+        wx.showToast({ title: '已加入拾光宝盒', icon: 'success' });
+      } catch (e) {
+        console.error('收藏失败', e);
+      }
     } else {
-      // 未收藏，添加收藏
-      favorites.unshift(currentQuote);
-      wx.showToast({ title: '收藏成功', icon: 'success' });
-      this.setData({ isFavorited: true });
+      // 取消收藏
+      try {
+        await db.collection('UserFavorites').where({
+          quote_id: quoteId
+        }).remove();
+        this.setData({ isFavorited: false });
+        wx.showToast({ title: '已移出拾光宝盒', icon: 'none' });
+      } catch (e) {
+        console.error('取消收藏失败', e);
+      }
     }
+  },
 
-    wx.setStorageSync('favorites', favorites);
+  // 检查云端收藏状态
+  checkFavoriteStatus() {
+    const db = wx.cloud.database();
+    if (!this.data.quoteId) return;
+
+    db.collection('UserFavorites').where({
+      quote_id: this.data.quoteId
+    }).count().then(res => {
+      this.setData({ isFavorited: res.total > 0 });
+    });
   },
 
   // 切换音乐
