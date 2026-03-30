@@ -60,7 +60,9 @@ Page({
     // 日签相关
     showCardModal: false,
     cardImagePath: '',
-    cardFlipped: false
+    cardFlipped: false,
+    // 收藏相关
+    isFavorited: false
   },
 
   onLoad() {
@@ -77,6 +79,7 @@ Page({
     }
     this.fetchQuote();
     this.initBgMusic();
+    this.checkFavoriteStatus();
   },
 
   // 随机选一首音乐
@@ -145,10 +148,49 @@ Page({
           quote: item.content || this.data.quote,
           author: item.author || this.data.author
         });
+        this.checkFavoriteStatus();
       }
     }).catch(err => {
       console.error('获取语录失败', err);
     });
+  },
+
+  // 检查当前语录是否已收藏
+  checkFavoriteStatus() {
+    const favorites = wx.getStorageSync('favorites') || [];
+    const isFavorited = favorites.some(item => 
+      item.quote === this.data.quote && item.author === this.data.author
+    );
+    this.setData({ isFavorited });
+  },
+
+  // 切换收藏状态
+  toggleFavorite() {
+    const favorites = wx.getStorageSync('favorites') || [];
+    const currentQuote = {
+      quote: this.data.quote,
+      author: this.data.author,
+      timestamp: Date.now(),
+      date: this.formatDate(new Date())
+    };
+
+    const index = favorites.findIndex(item => 
+      item.quote === currentQuote.quote && item.author === currentQuote.author
+    );
+
+    if (index > -1) {
+      // 已收藏，取消收藏
+      favorites.splice(index, 1);
+      wx.showToast({ title: '已取消收藏', icon: 'none' });
+      this.setData({ isFavorited: false });
+    } else {
+      // 未收藏，添加收藏
+      favorites.unshift(currentQuote);
+      wx.showToast({ title: '收藏成功', icon: 'success' });
+      this.setData({ isFavorited: true });
+    }
+
+    wx.setStorageSync('favorites', favorites);
   },
 
   // 切换音乐

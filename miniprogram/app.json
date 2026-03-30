@@ -3,7 +3,8 @@
     "pages/clarity/index",
     "pages/release/index",
     "pages/breathe/index",
-    "pages/profile/index"
+    "pages/profile/index",
+    "pages/favorites/index"
   ],
   "window": {
     "navigationBarBackgroundColor": "#F9F7F7",
