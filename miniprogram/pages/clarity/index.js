@@ -80,6 +80,8 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 });
     }
+    // tab 切换回来时重新检查收藏状态
+    this.checkFavoriteStatus();
   },
 
   // 获取每日语录（按日期精准匹配）
@@ -118,6 +120,8 @@ Page({
           quote: item.content,
           author: item.author,
           quoteId: item._id
+        }, () => {
+          this.checkFavoriteStatus(); // 拿到语录后再检查收藏
         });
       }
     });
@@ -168,16 +172,30 @@ Page({
 
   // 检查云端收藏状态 - 只查询当前用户的收藏
   checkFavoriteStatus() {
-    const db = wx.cloud.database();
-    if (!this.data.quoteId) return;
+    const app = getApp();
+    const isLogin = app.checkLogin();
 
+    // 如果用户未登录，直接设置为未收藏状态，不调用云函数
+    if (!isLogin) {
+      this.setData({ isFavorited: false });
+      return;
+    }
+
+    // 如果还没有 quoteId，说明数据还在加载中，不执行查询
+    if (!this.data.quoteId) {
+      this.setData({ isFavorited: false });
+      return;
+    }
+
+    const db = wx.cloud.database();
     // 云数据库会自动过滤当前用户的数据（基于 _openid）
     db.collection('UserFavorites').where({
       quote_id: this.data.quoteId
     }).count().then(res => {
       this.setData({ isFavorited: res.total > 0 });
     }).catch(err => {
-      console.error('检查收藏状态失败', err);
+      console.error('❌ 检查收藏状态失败', err);
+      this.setData({ isFavorited: false });
     });
   },
 
