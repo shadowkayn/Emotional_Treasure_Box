@@ -8,11 +8,13 @@
 /* 头部用户信息 */
 .header {
   display: flex;
+  flex-direction: column;
   align-items: center;
   margin-bottom: 60rpx;
 }
 
 .avatar-wrap {
+  position: relative;
   width: 160rpx;
   height: 160rpx;
   border-radius: 50%;
@@ -23,6 +25,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+  margin-bottom: 24rpx;
 }
 
 .avatar {
@@ -30,12 +33,29 @@
   height: 160rpx;
 }
 
+.login-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 20rpx;
+  text-align: center;
+  padding: 8rpx 0;
+}
+
 .nickname {
-  margin-left: 40rpx;
   font-size: 48rpx;
   font-weight: 600;
   color: #2c3e50;
   letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+
+.login-tip {
+  font-size: 24rpx;
+  color: #7f8c8d;
 }
 
 /* 功能卡片 */

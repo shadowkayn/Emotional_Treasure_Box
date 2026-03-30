@@ -1,10 +1,14 @@
 <view class="container">
   <!-- 头部用户信息 -->
   <view class="header">
-    <view class="avatar-wrap">
-      <image class="avatar" src="/images/avatar.png" mode="aspectFill"></image>
+    <view class="avatar-wrap" bindtap="handleLogin">
+      <image class="avatar" src="{{userInfo ? userInfo.avatarUrl : '/images/avatar.png'}}" mode="aspectFill"></image>
+      <view class="login-badge" wx:if="{{!isLogin}}">
+        <text>点击登录</text>
+      </view>
     </view>
-    <text class="nickname">情绪观察员</text>
+    <text class="nickname">{{userInfo ? userInfo.nickName : '情绪观察员'}}</text>
+    <text class="login-tip" wx:if="{{!isLogin}}">登录后可使用收藏等功能</text>
   </view>
 
   <!-- 功能卡片 -->

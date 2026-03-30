@@ -1,53 +1,9 @@
 const bgAudioManager = wx.getBackgroundAudioManager();
+const { checkLoginWithTip, formatDate, generateQuoteCard, getRandomBgImage } = require('../../utils/index');
 
 // 音乐列表 - 上传到云存储后把 URL 填这里
 const MUSIC_LIST = [
   { title: 'sacred play secret place', url: 'https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/Matryoshka%20-%20Sacred%20Play%20Secret%20Place.mp3?sign=00f44ee227b5ce56389e14f55443855c&t=1774842505' },
-];
-
-// 日签背景图列表 - Unsplash 精选（治愈系、自然风光、柔和色调）
-const CARD_BG_LIST = [
-  // 天空云彩系列
-  'https://images.unsplash.com/photo-1517483000871-1dbf64a6e1c6?w=800&q=80', // 粉紫色天空
-  'https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?w=800&q=80', // 蓝天白云
-  'https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=800&q=80', // 日落天空
-  'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800&q=80', // 柔和云层
-  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80', // 山间云海
-
-  // 海洋水面系列
-  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80', // 平静海面
-  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80', // 海滩浅蓝
-  'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80', // 海浪纹理
-  'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=800&q=80', // 深蓝海洋
-  'https://images.unsplash.com/photo-1439405326854-014607f694d7?w=800&q=80', // 海天一线
-
-  // 雾气山峦系列
-  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80', // 雾中山峰
-  'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80', // 晨雾山谷
-  'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&q=80', // 瀑布山林
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', // 雪山云雾
-  'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&q=80', // 山脉剪影
-
-  // 森林自然系列
-  'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80', // 绿色森林
-  'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=800&q=80', // 阳光树林
-  'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=80', // 独立大树
-  'https://images.unsplash.com/photo-1425913397330-cf8af2ff40a1?w=800&q=80', // 迷雾森林
-  'https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?w=800&q=80', // 竹林小径
-
-  // 极简抽象系列
-  'https://images.unsplash.com/photo-1530912780732-0d2507ded3e8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWluaW1hbCUyMGxhbmRzY2FwZXxlbnwwfHwwfHx8MA%3D%3D?w=800&q=80', // 紫色渐变
-  'https://images.unsplash.com/photo-1502790671504-542ad42d5189?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bWluaW1hbCUyMGxhbmRzY2FwZXxlbnwwfHwwfHx8MA%3D%3D', // 蓝绿渐变
-  'https://images.unsplash.com/photo-1521433849537-1d4ead3ddaf9?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // 粉蓝渐变
-  'https://images.unsplash.com/photo-1659775675138-b550c102bff3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1pbmltYWwlMjBsYW5kc2NhcGV8ZW58MHx8MHx8fDA%3D', // 彩色渐变
-  'https://images.unsplash.com/photo-1625633720107-5b537b6457ca?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG1pbmltYWwlMjBsYW5kc2NhcGV8ZW58MHx8MHx8fDA%3D', // 流体艺术
-
-  // 花卉植物系列
-  'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80', // 粉色花朵
-  'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=800&q=80', // 绿色植物
-  'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?w=800&q=80', // 白色雏菊
-  'https://images.unsplash.com/photo-1495231916356-a86217efff12?w=800&q=80', // 粉色玫瑰
-  'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=800&q=80', // 野花草地
 ];
 
 Page({
@@ -169,6 +125,11 @@ Page({
 
   // 切换收藏状态（存入云数据库）
   async toggleFavorite() {
+    // 使用工具函数检查登录
+    if (!checkLoginWithTip({ content: '收藏功能需要登录后使用' })) {
+      return;
+    }
+
     const db = wx.cloud.database();
     const { quote, author, quoteId, isFavorited } = this.data;
 
@@ -187,6 +148,7 @@ Page({
         wx.showToast({ title: '已加入拾光宝盒', icon: 'success' });
       } catch (e) {
         console.error('收藏失败', e);
+        wx.showToast({ title: '收藏失败', icon: 'none' });
       }
     } else {
       // 取消收藏
@@ -198,6 +160,7 @@ Page({
         wx.showToast({ title: '已移出拾光宝盒', icon: 'none' });
       } catch (e) {
         console.error('取消收藏失败', e);
+        wx.showToast({ title: '操作失败', icon: 'none' });
       }
     }
   },
@@ -228,94 +191,36 @@ Page({
     }
   },
 
-  // 生成日签分享 - 使用原生 Canvas 2D API
+  // 生成日签分享 - 使用工具函数
   generateDailyCard() {
+    // 使用工具函数检查登录
+    if (!checkLoginWithTip({ content: '生成日签功能需要登录后使用' })) {
+      return;
+    }
+
     wx.showLoading({ title: '生成中...' });
 
-    const today = this.formatDate(new Date());
-    const quote = this.data.quote;
-    const author = this.data.author;
-    const cardBgImage = CARD_BG_LIST[Math.floor(Math.random() * CARD_BG_LIST.length)];
-
-    const query = wx.createSelectorQuery();
-    query.select('#dailyCardCanvas')
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        if (!res[0]) {
-          wx.hideLoading();
-          wx.showToast({ title: '画布初始化失败', icon: 'none' });
-          return;
-        }
-
-        const canvas = res[0].node;
-        const ctx = canvas.getContext('2d');
-        const dpr = wx.getSystemInfoSync().pixelRatio;
-        
-        // 设置画布尺寸
-        canvas.width = 450 * dpr;
-        canvas.height = 800 * dpr;
-        ctx.scale(dpr, dpr);
-
-        // 加载背景图
-        const bgImg = canvas.createImage();
-        bgImg.onload = () => {
-          // 绘制背景图（cover模式）
-          this.drawImageCover(ctx, bgImg, 0, 0, 450, 800);
-          
-          // 绘制半透明遮罩
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-          ctx.fillRect(0, 0, 450, 800);
-
-          // 绘制文字
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-
-          // 引号和语录
-          ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 28px ZCool, sans-serif';
-          const quoteText = `"${quote}"`;
-          this.wrapText(ctx, quoteText, 225, 340, 370, 44);
-
-          // 作者
-          ctx.font = '20px ZCool, sans-serif';
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-          ctx.fillText(`—— ${author}`, 225, 520);
-
-          // 日期
-          ctx.font = '15px sans-serif';
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-          ctx.fillText(today, 225, 700);
-
-          // 导出图片
-          wx.canvasToTempFilePath({
-            canvas: canvas,
-            success: (res) => {
-              wx.hideLoading();
-              this.setData({
-                cardImagePath: res.tempFilePath,
-                showCardModal: true,
-                cardFlipped: false
-              });
-              setTimeout(() => {
-                this.setData({ cardFlipped: true });
-              }, 300);
-            },
-            fail: (err) => {
-              wx.hideLoading();
-              console.error('导出图片失败', err);
-              wx.showToast({ title: '生成失败', icon: 'none' });
-            }
-          });
-        };
-
-        bgImg.onerror = (err) => {
-          wx.hideLoading();
-          console.error('背景图加载失败', err);
-          wx.showToast({ title: '图片加载失败', icon: 'none' });
-        };
-
-        bgImg.src = cardBgImage;
+    generateQuoteCard({
+      canvasId: '#dailyCardCanvas',
+      quote: this.data.quote,
+      author: this.data.author,
+      date: formatDate(new Date()),
+      bgImage: getRandomBgImage()
+    }).then(tempFilePath => {
+      wx.hideLoading();
+      this.setData({
+        cardImagePath: tempFilePath,
+        showCardModal: true,
+        cardFlipped: false
       });
+      setTimeout(() => {
+        this.setData({ cardFlipped: true });
+      }, 300);
+    }).catch(err => {
+      wx.hideLoading();
+      console.error('生成日签失败', err);
+      wx.showToast({ title: err.message || '生成失败', icon: 'none' });
+    });
   },
 
   // 绘制图片（cover模式，居中裁剪）
