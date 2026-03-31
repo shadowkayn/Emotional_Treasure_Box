@@ -1,62 +1,96 @@
 <view class="container">
   <!-- 标题 -->
   <view class="header">
-    <text class="title">{{durations[durationIndex]}}分钟极简呼吸</text>
+    <text class="title">情绪日记</text>
+    <text class="subtitle">记录此刻的心情</text>
   </view>
 
-  <!-- 呼吸球区域 -->
-  <view class="breath-area">
-    <!-- 外层光晕 -->
-    <view class="glow {{breathing ? 'active' : ''}}"></view>
-    <!-- 呼吸球 -->
-    <view class="orb {{breathing ? 'active' : ''}}"></view>
-    <!-- 内层光点 -->
-    <view class="orb-inner {{breathing ? 'active' : ''}}"></view>
-  </view>
-
-  <!-- 横向波浪拉丝（每条线由20个点组成波浪） -->
-  <view class="silk-wave-wrap">
-    <view class="silk-row silk-row-1">
-      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
+  <!-- 统计卡片 -->
+  <view class="stats-card" wx:if="{{totalRecords > 0}}">
+    <view class="stat-item">
+      <text class="stat-number">{{totalRecords}}</text>
+      <text class="stat-label">天记录</text>
     </view>
-    <view class="silk-row silk-row-2">
-      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
-    </view>
-    <view class="silk-row silk-row-3">
-      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
-    </view>
-    <view class="silk-row silk-row-4">
-      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
-    </view>
-    <view class="silk-row silk-row-5">
-      <view wx:for="{{20}}" wx:key="index" class="dot d{{index}}"></view>
+    <view class="stat-divider"></view>
+    <view class="stat-item" bindtap="viewHistory">
+      <text class="stat-link">查看历史</text>
     </view>
   </view>
 
-  <!-- 呼吸提示文字 -->
-  <view class="hint-area">
-    <text class="hint-text" wx:if="{{!breathing}}">点击开始</text>
-    <block wx:else>
-      <text class="hint-text {{phase === 'inhale' ? 'show' : 'fade'}}">吸气...</text>
-      <text class="hint-text {{phase === 'exhale' ? 'show' : 'fade'}}">呼气...</text>
-    </block>
-  </view>
+  <!-- 今日记录区域 -->
+  <view class="today-section">
+    <view class="section-title">
+      <text class="title-text">今天的心情</text>
+      <text class="title-date">{{todayRecorded ? '已记录' : ''}}</text>
+    </view>
 
-  <!-- 时长选择 -->
-  <view class="duration-bar">
-    <view
-      wx:for="{{durations}}"
-      wx:key="index"
-      class="duration-item {{durationIndex === index ? 'selected' : ''}}"
-      bindtap="selectDuration"
-      data-index="{{index}}"
-    >
-      <text>{{item}}分钟</text>
+    <!-- 情绪选择 -->
+    <view class="mood-grid">
+      <view 
+        wx:for="{{moods}}" 
+        wx:key="id"
+        class="mood-item {{todayMood === item.id ? 'selected' : ''}} {{todayRecorded ? 'disabled' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="selectMood"
+        style="border-color: {{todayMood === item.id ? item.color : 'transparent'}}"
+      >
+        <text class="mood-emoji">{{item.emoji}}</text>
+        <text class="mood-name" style="color: {{todayMood === item.id ? item.color : '#8b7355'}}">{{item.name}}</text>
+      </view>
+    </view>
+
+    <!-- 备注输入 -->
+    <view class="note-section" wx:if="{{todayMood && !todayRecorded}}">
+      <textarea 
+        class="note-input"
+        placeholder="想说点什么吗？（选填）"
+        placeholder-style="color: #bbb"
+        maxlength="800"
+        value="{{todayNote}}"
+        bindinput="onNoteInput"
+      />
+      <view class="char-count">{{todayNote.length}}/800</view>
+    </view>
+
+    <!-- 已记录的备注显示 -->
+    <view class="note-display" wx:if="{{todayRecorded && todayNote}}">
+      <text class="note-label">今日备注</text>
+      <text class="note-text">{{todayNote}}</text>
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="save-btn" wx:if="{{todayMood && !todayRecorded}}" bindtap="saveMood">
+      <text>保存今日心情</text>
+    </view>
+
+    <!-- 已记录提示 -->
+    <view class="recorded-tip" wx:if="{{todayRecorded}}">
+      <text class="tip-icon">✓</text>
+      <text class="tip-text">今天已记录，明天再来吧</text>
     </view>
   </view>
 
-  <!-- 开始/停止按钮 -->
-  <view class="action-btn" bindtap="toggleBreathing">
-    <text>{{breathing ? '停止' : '开始'}}</text>
+  <!-- 最近情绪 -->
+  <view class="recent-section" wx:if="{{recentMoods.length > 0}}">
+    <view class="section-title">
+      <text class="title-text">最近7天</text>
+    </view>
+
+    <view class="recent-list">
+      <view class="recent-item" wx:for="{{recentMoods}}" wx:key="_id">
+        <view class="recent-mood">
+          <text class="recent-emoji">{{getMoodInfo(item.mood).emoji}}</text>
+          <text class="recent-name">{{getMoodInfo(item.mood).name}}</text>
+        </view>
+        <text class="recent-date">{{item.date}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{totalRecords === 0 && !todayMood}}">
+    <text class="empty-icon">📝</text>
+    <text class="empty-text">开始记录你的第一个心情吧</text>
+    <text class="empty-tip">觉察是改变的第一步</text>
   </view>
 </view>

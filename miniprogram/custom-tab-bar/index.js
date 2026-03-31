@@ -19,7 +19,7 @@ Component({
       },
       {
         pagePath: "/pages/breathe/index",
-        text: "呼吸",
+        text: "记录",
         iconPath: "/images/icons/col_seal_tuihui.png",
         selectedIconPath: "/images/icons/col_seal_tuihui_active.png"
       },

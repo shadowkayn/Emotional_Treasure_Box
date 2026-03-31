@@ -5,7 +5,8 @@
     "pages/breathe/index",
     "pages/profile/index",
     "pages/favorites/index",
-    "pages/anxiety-history/index"
+    "pages/anxiety-history/index",
+    "pages/mood-history/index"
   ],
   "window": {
     "navigationBarBackgroundColor": "#F9F7F7",
@@ -30,7 +31,7 @@
       },
       {
         "pagePath": "pages/breathe/index",
-        "text": "呼吸"
+        "text": "记录"
       },
       {
         "pagePath": "pages/profile/index",
