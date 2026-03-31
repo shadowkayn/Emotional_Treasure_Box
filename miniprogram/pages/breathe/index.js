@@ -1,4 +1,4 @@
-const { checkLoginWithTip, formatDate } = require('../../utils/index');
+const { checkLoginWithTip, formatDateDash } = require('../../utils/index');
 
 Page({
   data: {
@@ -41,7 +41,7 @@ Page({
     }
 
     const db = wx.cloud.database();
-    const today = formatDate(new Date());
+    const today = formatDateDash(new Date());
     
     db.collection('MoodRecords')
       .where({
@@ -102,7 +102,7 @@ Page({
     wx.showLoading({ title: '保存中...' });
 
     const db = wx.cloud.database();
-    const today = formatDate(new Date());
+    const today = formatDateDash(new Date());
     
     db.collection('MoodRecords').add({
       data: {
@@ -139,26 +139,28 @@ Page({
     }
 
     const db = wx.cloud.database();
+    const _ = db.command;
     
-    // 加载总记录数
-    db.collection('MoodRecords')
-      .count()
-      .then(res => {
-        this.setData({ totalRecords: res.total });
-      });
-
-    // 加载最近7天的情绪
+    // 计算7天前的日期
+    const today = new Date();
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setDate(today.getDate() - 6); // 包含今天共7天
     
+    const startDate = formatDateDash(sevenDaysAgo);
+    const endDate = formatDateDash(today);
+    
+    console.log('查询日期范围:', startDate, '到', endDate);
+    
+    // 查询最近7天的记录（基于date字段）
     db.collection('MoodRecords')
       .where({
-        createdAt: db.command.gte(sevenDaysAgo)
+        date: _.gte(startDate).and(_.lte(endDate))
       })
-      .orderBy('createdAt', 'desc')
-      .limit(7)
+      .orderBy('date', 'desc')
       .get()
       .then(res => {
+        console.log('最近7天记录:', res.data);
+        
         // 格式化日期显示
         const formattedData = res.data.map(item => {
           const date = new Date(item.date);
@@ -166,10 +168,15 @@ Page({
           const day = date.getDate();
           return {
             ...item,
-            date: `${month}/${day}`
+            displayDate: `${month}/${day}`
           };
         });
-        this.setData({ recentMoods: formattedData });
+        
+        this.setData({ 
+          recentMoods: formattedData,
+          totalRecords: res.data.length
+        });
+        
         this.calculateMoodStats(res.data);
       })
       .catch(err => {

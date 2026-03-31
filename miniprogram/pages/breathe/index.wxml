@@ -99,7 +99,7 @@
     <view class="mood-calendar">
       <view class="calendar-item" wx:for="{{recentMoods}}" wx:key="_id">
         <text class="calendar-emoji">{{getMoodInfo(item.mood).emoji}}</text>
-        <text class="calendar-date">{{item.date}}</text>
+        <text class="calendar-date">{{item.displayDate}}</text>
       </view>
     </view>
   </view>
