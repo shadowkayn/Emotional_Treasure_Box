@@ -70,19 +70,36 @@
     </view>
   </view>
 
-  <!-- 最近情绪 -->
+  <!-- 最近情绪 - 统计图表 -->
   <view class="recent-section" wx:if="{{recentMoods.length > 0}}">
     <view class="section-title">
-      <text class="title-text">最近7天</text>
+      <text class="title-text">最近7天情绪分布</text>
+      <text class="title-tip" bindtap="viewHistory">查看详情</text>
     </view>
 
-    <view class="recent-list">
-      <view class="recent-item" wx:for="{{recentMoods}}" wx:key="_id">
-        <view class="recent-mood">
-          <text class="recent-emoji">{{getMoodInfo(item.mood).emoji}}</text>
-          <text class="recent-name">{{getMoodInfo(item.mood).name}}</text>
+    <!-- 情绪统计图表 -->
+    <view class="mood-chart">
+      <view class="chart-item" wx:for="{{moods}}" wx:key="id" wx:if="{{moodStats[item.id] > 0}}">
+        <view class="chart-label">
+          <text class="chart-emoji">{{item.emoji}}</text>
+          <text class="chart-name">{{item.name}}</text>
         </view>
-        <text class="recent-date">{{item.date}}</text>
+        <view class="chart-bar-container">
+          <view 
+            class="chart-bar" 
+            style="width: {{(moodStats[item.id] / totalRecords * 100)}}%; background: {{item.color}}20; border-left: 4rpx solid {{item.color}}"
+          >
+            <text class="chart-count" style="color: {{item.color}}">{{moodStats[item.id]}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 日历视图 -->
+    <view class="mood-calendar">
+      <view class="calendar-item" wx:for="{{recentMoods}}" wx:key="_id">
+        <text class="calendar-emoji">{{getMoodInfo(item.mood).emoji}}</text>
+        <text class="calendar-date">{{item.date}}</text>
       </view>
     </view>
   </view>

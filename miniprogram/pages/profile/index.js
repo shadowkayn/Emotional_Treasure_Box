@@ -68,6 +68,18 @@ Page({
     wx.navigateTo({ url: '/pages/favorites/index' });
   },
 
+  goToMoodHistory() {
+    if (!this.data.isLogin) {
+      wx.showModal({
+        title: '需要登录',
+        content: '查看情绪历史需要先登录',
+        showCancel: false
+      });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/mood-history/index' });
+  },
+
   goToHistory() {
     if (!this.data.isLogin) {
       wx.showModal({

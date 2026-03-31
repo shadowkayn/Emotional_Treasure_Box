@@ -159,7 +159,17 @@ Page({
       .limit(7)
       .get()
       .then(res => {
-        this.setData({ recentMoods: res.data });
+        // 格式化日期显示
+        const formattedData = res.data.map(item => {
+          const date = new Date(item.date);
+          const month = date.getMonth() + 1;
+          const day = date.getDate();
+          return {
+            ...item,
+            date: `${month}/${day}`
+          };
+        });
+        this.setData({ recentMoods: formattedData });
         this.calculateMoodStats(res.data);
       })
       .catch(err => {
@@ -170,10 +180,15 @@ Page({
   // 计算情绪统计
   calculateMoodStats(records) {
     const stats = {};
+    let total = 0;
     records.forEach(record => {
       stats[record.mood] = (stats[record.mood] || 0) + 1;
+      total++;
     });
-    this.setData({ moodStats: stats });
+    this.setData({ 
+      moodStats: stats,
+      totalRecords: total
+    });
   },
 
   // 查看历史
