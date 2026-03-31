@@ -158,9 +158,7 @@ Page({
     
     const startDate = formatDateDash(sevenDaysAgo);
     const endDate = formatDateDash(today);
-    
-    console.log('查询日期范围:', startDate, '到', endDate);
-    
+
     // 查询最近7天的记录（基于date字段）
     db.collection('MoodRecords')
       .where({
@@ -169,8 +167,6 @@ Page({
       .orderBy('date', 'desc')
       .get()
       .then(res => {
-        console.log('最近7天记录:', res.data);
-        
         // 格式化日期显示
         const formattedData = res.data.map(item => {
           const date = new Date(item.date);
@@ -212,8 +208,6 @@ Page({
       }
     });
 
-    console.log('情绪统计:', dominant)
-    
     this.setData({ 
       moodStats: stats,
       totalRecords: total,

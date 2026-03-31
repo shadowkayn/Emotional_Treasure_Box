@@ -24,7 +24,6 @@ App({
       source: 'url("https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/ZCOOLXiaoWei-Regular.ttf?sign=f22d2dd0454db96a8f58cc4843fd1d77&t=1774856385")',
       scopes: ['webview', 'native'],
       success: (res) => {
-        console.log('✅ 字体加载成功', res);
         this.globalData.fontLoaded = true;
       },
       fail: (err) => {
@@ -46,7 +45,6 @@ App({
       if (userInfo && openid) {
         this.globalData.userInfo = userInfo;
         this.globalData.openid = openid;
-        console.log('✅ 从缓存恢复登录状态');
       }
     } catch (e) {
       console.error('读取缓存失败', e);
@@ -60,13 +58,11 @@ App({
       wx.login({
         success: (res) => {
           if (res.code) {
-            console.log('✅ 获取 code 成功');
             // 将 code 发送到云函数换取 openid
             wx.cloud.callFunction({
               name: 'quickstartFunctions',
               data: { type: 'getOpenId' }
             }).then(cloudRes => {
-              console.log('✅ 获取 openid 成功', cloudRes.result.openid);
               this.globalData.openid = cloudRes.result.openid;
               wx.setStorageSync('openid', cloudRes.result.openid);
               resolve(cloudRes.result.openid);
@@ -106,7 +102,6 @@ App({
       wx.getUserProfile({
         desc: '用于完善用户资料和提供个性化服务',
         success: (res) => {
-          console.log('✅ 获取用户信息成功');
           this.globalData.userInfo = res.userInfo;
           wx.setStorageSync('userInfo', res.userInfo);
           this.saveUserInfo(res.userInfo);
@@ -134,7 +129,6 @@ App({
         updateTime: db.serverDate()
       }
     }).then(() => {
-      console.log('✅ 用户信息保存成功');
     }).catch(err => {
       console.error('❌ 保存用户信息失败', err);
     });

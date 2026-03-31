@@ -146,7 +146,6 @@ Page({
         createdAt: db.serverDate()
       }
     }).then(() => {
-      console.log('✅ 焦虑记录保存成功');
     }).catch(err => {
       console.error('❌ 保存历史失败', err);
     });
