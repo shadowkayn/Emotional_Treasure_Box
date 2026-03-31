@@ -333,8 +333,9 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: this.data.quote,
-      path: '/pages/clarity/index'
+      title: `${this.data.quote} —— ${this.data.author}`,
+      path: '/pages/clarity/index',
+      imageUrl: this.data.bgImage // 使用当前背景图作为分享图
     };
   }
 });

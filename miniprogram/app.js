@@ -138,5 +138,14 @@ App({
     }).catch(err => {
       console.error('❌ 保存用户信息失败', err);
     });
+  },
+
+  // 全局分享配置
+  onShareAppMessage() {
+    return {
+      title: '情绪宝藏盒 - 你的情绪观察员',
+      path: '/pages/clarity/index',
+      imageUrl: '/images/share-cover.png' // 如果有分享图的话
+    };
   }
 });

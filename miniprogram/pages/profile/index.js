@@ -95,7 +95,8 @@ Page({
   onShareAppMessage() {
     return {
       title: '情绪宝藏盒 - 你的情绪观察员',
-      path: '/pages/clarity/index'
+      path: '/pages/clarity/index',
+      imageUrl: 'https://res.cloudinary.com/kayn-admin-cloud/image/upload/v1774504376/clarity-n-bk_vwvqmq.png' // 可选：自定义分享图（建议 5:4 比例）
     };
   }
 })

@@ -43,8 +43,9 @@
     </view>
   </view>
 
-  <!-- 分享按钮 -->
-  <button class="share-btn" open-type="share">
-    <text>分享给共鸣的人</text>
-  </button>
+  <!-- 分享提示 -->
+  <view class="share-tip">
+    <image class="tip-icon" src="/images/icons/share.png"/>
+    <text class="tip-text">点击右上角「···」分享给共鸣的人</text>
+  </view>
 </view>
