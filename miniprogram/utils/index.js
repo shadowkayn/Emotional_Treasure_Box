@@ -6,6 +6,7 @@ const auth = require('./auth');
 const date = require('./date');
 const canvas = require('./canvas');
 const constants = require('./constants');
+const security = require('./security');
 
 module.exports = {
   // 认证相关
@@ -18,5 +19,8 @@ module.exports = {
   ...canvas,
   
   // 常量
-  ...constants
+  ...constants,
+  
+  // 安全检测
+  ...security
 };

@@ -1,4 +1,4 @@
-const { checkLogin, checkLoginWithTip } = require('../../utils/index');
+const { checkLogin, checkLoginWithTip, checkTextSecurityWithLoading } = require('../../utils/index');
 
 Page({
   data: {
@@ -89,7 +89,7 @@ Page({
     this.setData({ content: e.detail.value });
   },
 
-  onShred() {
+  async onShred() {
     // 检查登录状态
     if (!checkLoginWithTip({ content: '粉碎焦虑功能需要登录后使用' })) {
       return;
@@ -97,6 +97,19 @@ Page({
 
     if (!this.data.content.trim()) {
       wx.showToast({ title: '先写下你的焦虑吧', icon: 'none' });
+      return;
+    }
+
+    // 内容安全检测
+    const securityResult = await checkTextSecurityWithLoading(this.data.content, '检测内容安全...');
+    
+    if (!securityResult.safe) {
+      wx.showModal({
+        title: '内容提示',
+        content: securityResult.message,
+        showCancel: false,
+        confirmText: '我知道了'
+      });
       return;
     }
 

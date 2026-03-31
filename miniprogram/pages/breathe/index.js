@@ -1,4 +1,4 @@
-const { checkLoginWithTip, formatDateDash } = require('../../utils/index');
+const { checkLoginWithTip, formatDateDash, checkTextSecurityWithLoading } = require('../../utils/index');
 
 Page({
   data: {
@@ -99,7 +99,7 @@ Page({
   },
 
   // 保存记录
-  saveMood() {
+  async saveMood() {
     if (!this.data.todayMood) {
       wx.showToast({ title: '请选择今天的心情', icon: 'none' });
       return;
@@ -107,6 +107,21 @@ Page({
 
     if (!checkLoginWithTip({ content: '保存情绪记录需要登录' })) {
       return;
+    }
+
+    // 如果有备注，进行内容安全检测
+    if (this.data.todayNote && this.data.todayNote.trim()) {
+      const securityResult = await checkTextSecurityWithLoading(this.data.todayNote, '检测内容安全...');
+      
+      if (!securityResult.safe) {
+        wx.showModal({
+          title: '内容提示',
+          content: securityResult.message,
+          showCancel: false,
+          confirmText: '我知道了'
+        });
+        return;
+      }
     }
 
     wx.showLoading({ title: '保存中...' });
