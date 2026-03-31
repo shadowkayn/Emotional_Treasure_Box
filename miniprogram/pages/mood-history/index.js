@@ -5,19 +5,19 @@ Page({
     records: [],
     loading: true,
     isEmpty: false,
+    moodInfo: {},
     
     // 情绪选项
     moods: [
-      { id: 'happy', name: '开心', emoji: '😊', color: '#FFD93D' },
-      { id: 'calm', name: '平静', emoji: '😌', color: '#A8E6CF' },
-      { id: 'anxious', name: '焦虑', emoji: '😰', color: '#FFB6B9' },
-      { id: 'sad', name: '低落', emoji: '😔', color: '#C7CEEA' },
-      { id: 'angry', name: '愤怒', emoji: '😠', color: '#FF8B94' }
+      { id: 'happy', name: '开心', emoji: '/images/icons/happy.png', color: '#74ff3d' },
+      { id: 'calm', name: '平静', emoji: '/images/icons/calm.png', color: '#A8E6CF' },
+      { id: 'anxious', name: '焦虑', emoji: '/images/icons/anxious.png', color: '#272525' },
+      { id: 'sad', name: '低落', emoji: '/images/icons/sad.png', color: '#C7CEEA' },
+      { id: 'angry', name: '愤怒', emoji: '/images/icons/angry.png', color: '#c81f2c' }
     ],
     
     // 统计数据
     moodStats: {},
-    mostFrequentMood: null
   },
 
   onLoad() {
@@ -89,7 +89,7 @@ Page({
     
     this.setData({ 
       moodStats: stats,
-      mostFrequentMood: mostFrequent
+      moodInfo: this.getMoodInfo(mostFrequent)
     });
   },
 

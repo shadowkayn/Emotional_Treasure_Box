@@ -6,14 +6,14 @@
   </view>
 
   <!-- 统计卡片 -->
-  <view class="stats-section" wx:if="{{mostFrequentMood}}">
+  <view class="stats-section" wx:if="{{moodInfo.id}}">
     <view class="stats-title">情绪分析</view>
     <view class="most-frequent">
       <text class="frequent-label">最常出现的情绪</text>
       <view class="frequent-mood">
-        <text class="frequent-emoji">{{getMoodInfo(mostFrequentMood).emoji}}</text>
-        <text class="frequent-name">{{getMoodInfo(mostFrequentMood).name}}</text>
-        <text class="frequent-count">{{moodStats[mostFrequentMood]}}次</text>
+        <image class="frequent-emoji" alt="emoji" src="{{ moodInfo.emoji }}" />
+        <text class="frequent-name">{{moodInfo.name}}</text>
+        <text class="frequent-count">{{moodStats[moodInfo.id]}}次</text>
       </view>
     </view>
   </view>

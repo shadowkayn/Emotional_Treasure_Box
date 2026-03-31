@@ -9,17 +9,27 @@ Page({
     
     // 情绪选项
     moods: [
-      { id: 'happy', name: '开心', emoji: '😊', color: '#74ff3d' },
-      { id: 'calm', name: '平静', emoji: '😌', color: '#A8E6CF' },
-      { id: 'anxious', name: '焦虑', emoji: '😰', color: '#272525' },
-      { id: 'sad', name: '低落', emoji: '😔', color: '#C7CEEA' },
-      { id: 'angry', name: '愤怒', emoji: '😠', color: '#c81f2c' }
+      { id: 'happy', name: '开心', emoji: '/images/icons/happy.png', color: '#74ff3d' },
+      { id: 'calm', name: '平静', emoji: '/images/icons/calm.png', color: '#A8E6CF' },
+      { id: 'anxious', name: '焦虑', emoji: '/images/icons/anxious.png', color: '#272525' },
+      { id: 'sad', name: '低落', emoji: '/images/icons/sad.png', color: '#C7CEEA' },
+      { id: 'angry', name: '愤怒', emoji: '/images/icons/angry.png', color: '#c81f2c' }
     ],
     
     // 统计数据
     totalRecords: 0,
     recentMoods: [], // 最近7天的情绪
-    moodStats: {} // 情绪统计
+    moodStats: {}, // 情绪统计
+    moodInfo: {},
+    
+    // 情绪提示语
+    moodTips: {
+      happy: '保持这份快乐，记得分享给身边的人 ✨',
+      calm: '平静是一种力量，继续保持内心的安宁 🌿',
+      anxious: '深呼吸，一切都会好起来的。试试运动或冥想来缓解焦虑 🫂',
+      sad: '允许自己感受悲伤，这也是成长的一部分。需要时记得寻求支持 🌈',
+      angry: '愤怒是正常的情绪，找到合适的方式表达和释放很重要 🔥'
+    }
   },
 
   onLoad() {
@@ -188,13 +198,26 @@ Page({
   calculateMoodStats(records) {
     const stats = {};
     let total = 0;
+    let maxCount = 0;
+    let dominant = null;
+    
     records.forEach(record => {
       stats[record.mood] = (stats[record.mood] || 0) + 1;
       total++;
+      
+      // 找出出现最多的情绪
+      if (stats[record.mood] > maxCount) {
+        maxCount = stats[record.mood];
+        dominant = record.mood;
+      }
     });
+
+    console.log('情绪统计:', dominant)
+    
     this.setData({ 
       moodStats: stats,
-      totalRecords: total
+      totalRecords: total,
+      moodInfo: this.getMoodInfo(dominant)
     });
   },
 

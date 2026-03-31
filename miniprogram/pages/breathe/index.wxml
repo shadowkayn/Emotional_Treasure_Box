@@ -34,7 +34,7 @@
         bindtap="selectMood"
         style="border-color: {{todayMood === item.id ? item.color : 'transparent'}}"
       >
-        <text class="mood-emoji">{{item.emoji}}</text>
+        <image class="mood-emoji" alt="emoji" src="{{ item.emoji }}" />
         <text class="mood-name" style="color: {{todayMood === item.id ? item.color : '#8b7355'}}">{{item.name}}</text>
       </view>
     </view>
@@ -70,7 +70,7 @@
     </view>
   </view>
 
-  <!-- 最近情绪 - 统计图表 -->
+  <!-- 最近情绪统计 -->
   <view class="recent-section" wx:if="{{recentMoods.length > 0}}">
     <view class="section-title">
       <text class="title-text">最近7天情绪分布</text>
@@ -81,7 +81,7 @@
     <view class="mood-chart">
       <view class="chart-item" wx:for="{{moods}}" wx:key="id" wx:if="{{moodStats[item.id] > 0}}">
         <view class="chart-label">
-          <text class="chart-emoji">{{item.emoji}}</text>
+          <image class="chart-emoji" alt="emoji" src="{{ item.emoji }}" />
           <text class="chart-name">{{item.name}}</text>
         </view>
         <view class="chart-bar-container">
@@ -95,11 +95,20 @@
       </view>
     </view>
 
-    <!-- 日历视图 -->
-    <view class="mood-calendar">
-      <view class="calendar-item" wx:for="{{recentMoods}}" wx:key="_id">
-        <text class="calendar-emoji">{{getMoodInfo(item.mood).emoji}}</text>
-        <text class="calendar-date">{{item.displayDate}}</text>
+    <!-- 情绪分析提示 -->
+    <view class="mood-insight" wx:if="{{moodInfo.id}}">
+      <view class="insight-header">
+        <text class="insight-icon">💭</text>
+        <text class="insight-title">情绪洞察</text>
+      </view>
+      <view class="insight-content">
+        <text class="insight-text">最近你的 </text>
+        <image class="chart-emoji" alt="emoji" src="{{ moodInfo.emoji }}" />
+        <text class="insight-mood" style="color: {{moodInfo.color}}">{{moodInfo.name}}</text>
+        <text class="insight-text">出现得最多</text>
+      </view>
+      <view class="insight-tip">
+        <text>{{moodTips[moodInfo.id]}}</text>
       </view>
     </view>
   </view>

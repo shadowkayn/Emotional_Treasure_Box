@@ -62,7 +62,8 @@
 }
 
 .frequent-emoji {
-  font-size: 48rpx;
+  width: 52rpx;
+  height: 52rpx;
 }
 
 .frequent-name {
