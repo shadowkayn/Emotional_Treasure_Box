@@ -16,6 +16,14 @@
         <text class="frequent-count">{{moodStats[moodInfo.id]}}次</text>
       </view>
     </view>
+    
+    <!-- 情绪关怀提示 -->
+    <view class="mood-care">
+      <image class="care-icon" alt="alt" src="/images/icons/tips.png"/>
+      <view class="care-content">
+        <text class="care-text">{{moodTips[moodInfo.id]}}</text>
+      </view>
+    </view>
   </view>
 
   <!-- 加载中 -->

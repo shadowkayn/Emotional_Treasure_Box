@@ -78,6 +78,33 @@
   color: #a08060;
 }
 
+/* 情绪关怀提示 */
+.mood-care {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, rgba(168, 230, 207, 0.12) 0%, rgba(255, 255, 255, 0.5) 100%);
+  border-radius: 16rpx;
+  border-left: 4rpx solid #A8E6CF;
+  display: flex;
+  gap: 16rpx;
+}
+
+.care-icon {
+  width: 52rpx;
+  height: 52rpx;
+}
+
+.care-content {
+  flex: 1;
+}
+
+.care-text {
+  font-size: 26rpx;
+  color: #5d4e37;
+  line-height: 1.8;
+  letter-spacing: 1rpx;
+}
+
 /* 加载中 */
 .loading {
   text-align: center;
