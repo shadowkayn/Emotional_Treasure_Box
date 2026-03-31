@@ -4,7 +4,8 @@ Page({
   data: {
     favorites: [],
     showCardModal: false,
-    cardImagePath: ''
+    cardImagePath: '',
+    cardFlipped: false // 添加翻牌状态
   },
 
   onLoad() {
@@ -76,8 +77,13 @@ Page({
       wx.hideLoading();
       this.setData({
         cardImagePath: tempFilePath,
-        showCardModal: true
+        showCardModal: true,
+        cardFlipped: false
       });
+      // 延迟触发翻牌动画
+      setTimeout(() => {
+        this.setData({ cardFlipped: true });
+      }, 300);
     }).catch(err => {
       wx.hideLoading();
       console.error('生成日签失败', err);
@@ -114,7 +120,7 @@ Page({
 
   // 关闭弹窗
   closeCardModal() {
-    this.setData({ showCardModal: false });
+    this.setData({ showCardModal: false, cardFlipped: false });
   },
 
   // 保存到相册
