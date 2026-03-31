@@ -9,11 +9,11 @@ Page({
     
     // 情绪选项
     moods: [
-      { id: 'happy', name: '开心', emoji: '/images/icons/happy.png', color: '#74ff3d' },
-      { id: 'calm', name: '平静', emoji: '/images/icons/calm.png', color: '#A8E6CF' },
-      { id: 'anxious', name: '焦虑', emoji: '/images/icons/anxious.png', color: '#272525' },
-      { id: 'sad', name: '低落', emoji: '/images/icons/sad.png', color: '#C7CEEA' },
-      { id: 'angry', name: '愤怒', emoji: '/images/icons/angry.png', color: '#c81f2c' }
+      { id: 'happy', name: '开心', emoji: '/images/icons/happy.png', textEmoji: '😊', color: '#74ff3d' },
+      { id: 'calm', name: '平静', emoji: '/images/icons/calm.png', textEmoji: '😌', color: '#A8E6CF' },
+      { id: 'anxious', name: '焦虑', emoji: '/images/icons/anxious.png', textEmoji: '😰', color: '#272525' },
+      { id: 'sad', name: '低落', emoji: '/images/icons/sad.png', textEmoji: '😔', color: '#C7CEEA' },
+      { id: 'angry', name: '愤怒', emoji: '/images/icons/angry.png', textEmoji: '😠', color: '#c81f2c' }
     ],
     
     // 统计数据
@@ -42,6 +42,7 @@ Page({
       this.getTabBar().setData({ selected: 2 });
     }
     this.checkTodayRecord();
+    this.loadStatistics(); // 添加统计数据加载
   },
 
   // 检查今天是否已记录
@@ -209,24 +210,41 @@ Page({
   calculateMoodStats(records) {
     const stats = {};
     let total = 0;
-    let maxCount = 0;
-    let dominant = null;
     
     records.forEach(record => {
       stats[record.mood] = (stats[record.mood] || 0) + 1;
       total++;
-      
-      // 找出出现最多的情绪
-      if (stats[record.mood] > maxCount) {
-        maxCount = stats[record.mood];
-        dominant = record.mood;
+    });
+
+    // 找出出现最多的情绪（次数相同时按优先级）
+    const moodPriority = ['anxious', 'sad', 'angry', 'calm', 'happy'];
+    let maxCount = 0;
+    let dominant = null;
+    
+    // 先找出最大次数
+    Object.keys(stats).forEach(mood => {
+      if (stats[mood] > maxCount) {
+        maxCount = stats[mood];
       }
     });
+    
+    // 在最大次数的情绪中，按优先级选择
+    if (maxCount > 0) {
+      for (let mood of moodPriority) {
+        if (stats[mood] === maxCount) {
+          dominant = mood;
+          break;
+        }
+      }
+    }
+
+    // 只有当有主导情绪时才设置 moodInfo
+    const moodInfo = dominant ? this.getMoodInfo(dominant) : {};
 
     this.setData({ 
       moodStats: stats,
       totalRecords: total,
-      moodInfo: this.getMoodInfo(dominant)
+      moodInfo: moodInfo
     });
   },
 

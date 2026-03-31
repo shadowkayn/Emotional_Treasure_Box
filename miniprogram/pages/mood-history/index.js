@@ -9,11 +9,11 @@ Page({
     
     // 情绪选项
     moods: [
-      { id: 'happy', name: '开心', emoji: '/images/icons/happy.png', color: '#74ff3d' },
-      { id: 'calm', name: '平静', emoji: '/images/icons/calm.png', color: '#A8E6CF' },
-      { id: 'anxious', name: '焦虑', emoji: '/images/icons/anxious.png', color: '#272525' },
-      { id: 'sad', name: '低落', emoji: '/images/icons/sad.png', color: '#C7CEEA' },
-      { id: 'angry', name: '愤怒', emoji: '/images/icons/angry.png', color: '#c81f2c' }
+      { id: 'happy', name: '开心', emoji: '/images/icons/happy.png', textEmoji: '😊', color: '#74ff3d' },
+      { id: 'calm', name: '平静', emoji: '/images/icons/calm.png', textEmoji: '😌', color: '#A8E6CF' },
+      { id: 'anxious', name: '焦虑', emoji: '/images/icons/anxious.png', textEmoji: '😰', color: '#272525' },
+      { id: 'sad', name: '低落', emoji: '/images/icons/sad.png', textEmoji: '😔', color: '#C7CEEA' },
+      { id: 'angry', name: '愤怒', emoji: '/images/icons/angry.png', textEmoji: '😠', color: '#c81f2c' }
     ],
     
     // 统计数据
@@ -86,15 +86,27 @@ Page({
       stats[record.mood] = (stats[record.mood] || 0) + 1;
     });
     
-    // 找出最频繁的情绪
+    // 找出最频繁的情绪（次数相同时按优先级）
+    const moodPriority = ['anxious', 'sad', 'angry', 'calm', 'happy'];
     let maxCount = 0;
     let mostFrequent = null;
+    
+    // 先找出最大次数
     Object.keys(stats).forEach(mood => {
       if (stats[mood] > maxCount) {
         maxCount = stats[mood];
-        mostFrequent = mood;
       }
     });
+    
+    // 在最大次数的情绪中，按优先级选择
+    if (maxCount > 0) {
+      for (let mood of moodPriority) {
+        if (stats[mood] === maxCount) {
+          mostFrequent = mood;
+          break;
+        }
+      }
+    }
     
     this.setData({ 
       moodStats: stats,
@@ -118,7 +130,7 @@ Page({
     const content = item.note ? item.note : '没有备注';
     
     wx.showModal({
-      title: `${moodInfo.emoji} ${moodInfo.name} - ${item.dateStr}`,
+      title: `${moodInfo.textEmoji || ''} ${moodInfo.name} - ${item.dateStr}`,
       content: content,
       showCancel: false,
       confirmText: '知道了'
