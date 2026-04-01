@@ -63,17 +63,21 @@ Page({
   },
 
   // 生成日签卡片 - 使用工具函数
-  generateCard(e) {
+  async generateCard(e) {
     const item = e.currentTarget.dataset.item;
     wx.showLoading({ title: '生成中...' });
 
-    generateQuoteCard({
-      canvasId: '#dailyCardCanvas',
-      quote: item.quote,
-      author: item.author,
-      date: item.date,
-      bgImage: getRandomBgImage()
-    }).then(tempFilePath => {
+    try {
+      const bgImage = await getRandomBgImage(); // 异步获取背景图
+      
+      const tempFilePath = await generateQuoteCard({
+        canvasId: '#dailyCardCanvas',
+        quote: item.quote,
+        author: item.author,
+        date: item.date,
+        bgImage: bgImage
+      });
+      
       wx.hideLoading();
       this.setData({
         cardImagePath: tempFilePath,
@@ -84,11 +88,11 @@ Page({
       setTimeout(() => {
         this.setData({ cardFlipped: true });
       }, 300);
-    }).catch(err => {
+    } catch (err) {
       wx.hideLoading();
       console.error('生成日签失败', err);
       wx.showToast({ title: err.message || '生成失败', icon: 'none' });
-    });
+    }
   },
 
   // 删除收藏（从云数据库）

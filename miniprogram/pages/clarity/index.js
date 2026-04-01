@@ -10,7 +10,8 @@ Page({
   data: {
     quote: '',
     author: '',
-    bgImage: 'https://res.cloudinary.com/kayn-admin-cloud/image/upload/v1774504376/clarity-n-bk_vwvqmq.png',
+    bgImage: '', // 改为空，从数据库加载
+    bgImages: [], // 存储所有背景图
     musicPlaying: false,
     currentMusic: null,
     // 日签相关
@@ -22,6 +23,7 @@ Page({
   },
 
   onLoad() {
+    this.loadBackgroundImages(); // 先加载背景图
     this.fetchQuote();
     this.initBgMusic();
     this.checkFavoriteStatus();
@@ -33,6 +35,47 @@ Page({
     if (validList.length === 0) return null;
     const idx = Math.floor(Math.random() * validList.length);
     return validList[idx];
+  },
+
+  // 加载背景图列表
+  loadBackgroundImages() {
+    const db = wx.cloud.database();
+    db.collection('BackgroundImages')
+      .where({
+        category: 'clarity',
+        isActive: true
+      })
+      .orderBy('order', 'asc')
+      .limit(100) // 增加查询数量限制
+      .get()
+      .then(res => {
+        if (res.data && res.data.length > 0) {
+          this.setData({ bgImages: res.data });
+          // 随机选择一张背景图
+          this.setRandomBackground();
+        } else {
+          // 如果数据库没有数据，使用默认背景
+          this.setData({ 
+            bgImage: 'https://res.cloudinary.com/kayn-admin-cloud/image/upload/v1774504376/clarity-n-bk_vwvqmq.png' 
+          });
+        }
+      })
+      .catch(err => {
+        console.error('加载背景图失败', err);
+        // 失败时使用默认背景
+        this.setData({ 
+          bgImage: 'https://res.cloudinary.com/kayn-admin-cloud/image/upload/v1774504376/clarity-n-bk_vwvqmq.png' 
+        });
+      });
+  },
+
+  // 随机设置背景图
+  setRandomBackground() {
+    const { bgImages } = this.data;
+    if (bgImages.length > 0) {
+      const randomIndex = Math.floor(Math.random() * bgImages.length);
+      this.setData({ bgImage: bgImages[randomIndex].url });
+    }
   },
 
   // 初始化背景音乐
@@ -214,7 +257,7 @@ Page({
   },
 
   // 生成日签分享 - 使用工具函数
-  generateDailyCard() {
+  async generateDailyCard() {
     // 使用工具函数检查登录
     if (!checkLoginWithTip({ content: '生成日签功能需要登录后使用' })) {
       return;
@@ -222,13 +265,17 @@ Page({
 
     wx.showLoading({ title: '生成中...' });
 
-    generateQuoteCard({
-      canvasId: '#dailyCardCanvas',
-      quote: this.data.quote,
-      author: this.data.author,
-      date: formatDate(new Date()),
-      bgImage: getRandomBgImage()
-    }).then(tempFilePath => {
+    try {
+      const bgImage = await getRandomBgImage(); // 异步获取背景图
+      
+      const tempFilePath = await generateQuoteCard({
+        canvasId: '#dailyCardCanvas',
+        quote: this.data.quote,
+        author: this.data.author,
+        date: formatDate(new Date()),
+        bgImage: bgImage
+      });
+      
       wx.hideLoading();
       this.setData({
         cardImagePath: tempFilePath,
@@ -238,11 +285,11 @@ Page({
       setTimeout(() => {
         this.setData({ cardFlipped: true });
       }, 300);
-    }).catch(err => {
+    } catch (err) {
       wx.hideLoading();
       console.error('生成日签失败', err);
       wx.showToast({ title: err.message || '生成失败', icon: 'none' });
-    });
+    }
   },
 
   // 绘制图片（cover模式，居中裁剪）
