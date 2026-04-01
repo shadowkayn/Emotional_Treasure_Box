@@ -159,7 +159,7 @@ Page({
   },
 
   // 加载统计数据
-  loadStatistics() {
+  async loadStatistics() {
     if (!checkLoginWithTip({ content: '' })) {
       return;
     }
@@ -175,35 +175,55 @@ Page({
     const startDate = formatDateDash(sevenDaysAgo);
     const endDate = formatDateDash(today);
 
-    // 查询最近7天的记录（基于date字段）
-    db.collection('MoodRecords')
-      .where({
-        date: _.gte(startDate).and(_.lte(endDate))
-      })
-      .orderBy('date', 'desc')
-      .get()
-      .then(res => {
-        // 格式化日期显示
-        const formattedData = res.data.map(item => {
-          const date = new Date(item.date);
-          const month = date.getMonth() + 1;
-          const day = date.getDate();
-          return {
-            ...item,
-            displayDate: `${month}/${day}`
-          };
-        });
-        
-        this.setData({ 
-          recentMoods: formattedData,
-          totalRecords: res.data.length
-        });
-        
-        this.calculateMoodStats(res.data);
-      })
-      .catch(err => {
-        console.error('加载统计失败', err);
+    try {
+      // 先获取符合条件的总数
+      const countResult = await db.collection('MoodRecords')
+        .where({
+          date: _.gte(startDate).and(_.lte(endDate))
+        })
+        .count();
+      const total = countResult.total;
+      
+      // 分批查询所有数据
+      const batchSize = 100;
+      const batchCount = Math.ceil(total / batchSize);
+      const tasks = [];
+      
+      for (let i = 0; i < batchCount; i++) {
+        const promise = db.collection('MoodRecords')
+          .where({
+            date: _.gte(startDate).and(_.lte(endDate))
+          })
+          .orderBy('date', 'desc')
+          .skip(i * batchSize)
+          .limit(batchSize)
+          .get();
+        tasks.push(promise);
+      }
+      
+      const results = await Promise.all(tasks);
+      const allData = results.reduce((acc, res) => acc.concat(res.data), []);
+      
+      // 格式化日期显示
+      const formattedData = allData.map(item => {
+        const date = new Date(item.date);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return {
+          ...item,
+          displayDate: `${month}/${day}`
+        };
       });
+      
+      this.setData({ 
+        recentMoods: formattedData,
+        totalRecords: allData.length
+      });
+      
+      this.calculateMoodStats(allData);
+    } catch (err) {
+      console.error('加载统计失败', err);
+    }
   },
 
   // 计算情绪统计

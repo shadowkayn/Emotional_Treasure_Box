@@ -17,7 +17,7 @@ Page({
   },
 
   // 加载收藏列表（从云数据库）- 自动过滤当前用户的收藏
-  loadFavorites() {
+  async loadFavorites() {
     // 使用工具函数检查登录
     if (!checkLogin()) {
       this.setData({ favorites: [] });
@@ -26,28 +26,45 @@ Page({
 
     wx.showLoading({ title: '加载中...' });
     const db = wx.cloud.database();
-    // 云数据库会自动根据 _openid 过滤当前用户的数据
-    db.collection('UserFavorites')
-      .orderBy('createdAt', 'desc')
-      .get()
-      .then(res => {
-        wx.hideLoading();
-        // 格式化数据以适配页面显示
-        const favorites = res.data.map(item => ({
-          quote: item.content,
-          author: item.author,
-          date: formatDate(item.createdAt),
-          timestamp: item.createdAt.getTime(),
-          _id: item._id,
-          quote_id: item.quote_id
-        }));
-        this.setData({ favorites });
-      })
-      .catch(err => {
-        wx.hideLoading();
-        console.error('加载收藏失败', err);
-        wx.showToast({ title: '加载失败', icon: 'none' });
-      });
+    
+    try {
+      // 先获取总数
+      const countResult = await db.collection('UserFavorites').count();
+      const total = countResult.total;
+      
+      // 分批查询所有数据
+      const batchSize = 100;
+      const batchCount = Math.ceil(total / batchSize);
+      const tasks = [];
+      
+      for (let i = 0; i < batchCount; i++) {
+        const promise = db.collection('UserFavorites')
+          .orderBy('createdAt', 'desc')
+          .skip(i * batchSize)
+          .limit(batchSize)
+          .get();
+        tasks.push(promise);
+      }
+      
+      const results = await Promise.all(tasks);
+      const allData = results.reduce((acc, res) => acc.concat(res.data), []);
+      
+      wx.hideLoading();
+      // 格式化数据以适配页面显示
+      const favorites = allData.map(item => ({
+        quote: item.content,
+        author: item.author,
+        date: formatDate(item.createdAt),
+        timestamp: item.createdAt.getTime(),
+        _id: item._id,
+        quote_id: item.quote_id
+      }));
+      this.setData({ favorites });
+    } catch (err) {
+      wx.hideLoading();
+      console.error('加载收藏失败', err);
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    }
   },
 
   // 查看语录详情

@@ -16,7 +16,7 @@ Page({
   },
 
   // 加载粉碎历史
-  loadHistory() {
+  async loadHistory() {
     if (!checkLogin()) {
       wx.showModal({
         title: '需要登录',
@@ -36,29 +36,44 @@ Page({
     this.setData({ loading: true });
     const db = wx.cloud.database();
     
-    // 云数据库会自动根据 _openid 过滤当前用户的数据
-    db.collection('AnxietyHistory')
-      .orderBy('createdAt', 'desc')
-      .limit(100)
-      .get()
-      .then(res => {
-        const historyList = res.data.map(item => ({
-          ...item,
-          dateStr: this.formatDateTime(item.createdAt),
-          dateOnly: formatDate(item.createdAt)
-        }));
-        
-        this.setData({
-          historyList,
-          loading: false,
-          isEmpty: historyList.length === 0
-        });
-      })
-      .catch(err => {
-        console.error('加载历史失败', err);
-        this.setData({ loading: false });
-        wx.showToast({ title: '加载失败', icon: 'none' });
+    try {
+      // 先获取总数
+      const countResult = await db.collection('AnxietyHistory').count();
+      const total = countResult.total;
+      
+      // 分批查询所有数据
+      const batchSize = 100;
+      const batchCount = Math.ceil(total / batchSize);
+      const tasks = [];
+      
+      for (let i = 0; i < batchCount; i++) {
+        const promise = db.collection('AnxietyHistory')
+          .orderBy('createdAt', 'desc')
+          .skip(i * batchSize)
+          .limit(batchSize)
+          .get();
+        tasks.push(promise);
+      }
+      
+      const results = await Promise.all(tasks);
+      const allData = results.reduce((acc, res) => acc.concat(res.data), []);
+      
+      const historyList = allData.map(item => ({
+        ...item,
+        dateStr: this.formatDateTime(item.createdAt),
+        dateOnly: formatDate(item.createdAt)
+      }));
+      
+      this.setData({
+        historyList,
+        loading: false,
+        isEmpty: historyList.length === 0
       });
+    } catch (err) {
+      console.error('加载历史失败', err);
+      this.setData({ loading: false });
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    }
   },
 
   // 格式化日期时间
