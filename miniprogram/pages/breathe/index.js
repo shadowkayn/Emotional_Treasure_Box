@@ -176,7 +176,7 @@ Page({
     const endDate = formatDateDash(today);
 
     try {
-      // 先获取符合条件的总数
+      // 查询最近7天的记录
       const countResult = await db.collection('MoodRecords')
         .where({
           date: _.gte(startDate).and(_.lte(endDate))
@@ -184,7 +184,6 @@ Page({
         .count();
       const total = countResult.total;
       
-      // 分批查询所有数据
       const batchSize = 100;
       const batchCount = Math.ceil(total / batchSize);
       const tasks = [];
@@ -202,10 +201,10 @@ Page({
       }
       
       const results = await Promise.all(tasks);
-      const allData = results.reduce((acc, res) => acc.concat(res.data), []);
+      const recentData = results.reduce((acc, res) => acc.concat(res.data), []);
       
       // 格式化日期显示
-      const formattedData = allData.map(item => {
+      const formattedData = recentData.map(item => {
         const date = new Date(item.date);
         const month = date.getMonth() + 1;
         const day = date.getDate();
@@ -215,12 +214,16 @@ Page({
         };
       });
       
+      // 查询用户总共记录了多少天（所有历史记录）
+      const totalCountResult = await db.collection('MoodRecords').count();
+      const totalDays = totalCountResult.total; // 因为一天只能记录一次，所以记录数=天数
+      
       this.setData({ 
         recentMoods: formattedData,
-        totalRecords: allData.length
+        totalRecords: totalDays
       });
       
-      this.calculateMoodStats(allData);
+      this.calculateMoodStats(recentData);
     } catch (err) {
       console.error('加载统计失败', err);
     }
@@ -229,11 +232,9 @@ Page({
   // 计算情绪统计
   calculateMoodStats(records) {
     const stats = {};
-    let total = 0;
     
     records.forEach(record => {
       stats[record.mood] = (stats[record.mood] || 0) + 1;
-      total++;
     });
 
     // 找出出现最多的情绪（次数相同时按优先级）
@@ -263,8 +264,8 @@ Page({
 
     this.setData({ 
       moodStats: stats,
-      totalRecords: total,
       moodInfo: moodInfo
+      // 不再覆盖 totalRecords，保持之前查询的总天数
     });
   },
 
