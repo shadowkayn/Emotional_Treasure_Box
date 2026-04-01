@@ -24,8 +24,6 @@ async function checkTextSecurity(content) {
       }
     });
 
-    console.log('内容安全检测返回:', result);
-
     if (result.result) {
       return {
         safe: result.result.safe,

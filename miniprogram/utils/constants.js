@@ -26,9 +26,7 @@ async function getRandomBgImage() {
         isActive: true
       })
       .count();
-    
-    console.log('📷 数据库背景图总数:', countRes.total);
-    
+
     if (countRes.total === 0) {
       console.warn('⚠️ 数据库没有背景图数据，使用默认列表');
       return CARD_BG_LIST[Math.floor(Math.random() * CARD_BG_LIST.length)];
@@ -49,8 +47,7 @@ async function getRandomBgImage() {
     
     if (res.data && res.data.length > 0) {
       const selectedBg = res.data[0];
-      console.log('📷 随机选中的背景图:', selectedBg);
-      console.log('📷 背景图URL:', selectedBg.url);
+
       return selectedBg.url;
     } else {
       console.warn('⚠️ 查询失败，使用默认列表');

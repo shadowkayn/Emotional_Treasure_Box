@@ -26,8 +26,6 @@ exports.main = async (event, context) => {
       openid: cloud.getWXContext().OPENID
     });
 
-    console.log('内容安全检测结果:', result);
-
     // 检测结果判断
     if (result.errCode === 0) {
       // result.result.suggest: 'pass'-通过, 'review'-需人工审核, 'risky'-违规
