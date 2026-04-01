@@ -24,6 +24,12 @@
       <text class="title-date">{{todayRecorded ? '已记录' : ''}}</text>
     </view>
 
+    <!-- 未记录提示 -->
+    <view class="today-tip" wx:if="{{!todayRecorded && !todayMood}}">
+      <text class="tip-emoji">🌸</text>
+      <text class="tip-message">今天还没记录情绪哟～</text>
+    </view>
+
     <!-- 情绪选择 -->
     <view class="mood-grid">
       <view 

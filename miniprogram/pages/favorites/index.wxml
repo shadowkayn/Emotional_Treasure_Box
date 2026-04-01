@@ -1,6 +1,6 @@
 <view class="container">
   <view class="header">
-    <text class="title">收藏的日签</text>
+    <text class="title">收藏金句</text>
     <text class="count">共 {{favorites.length}} 条</text>
   </view>
 

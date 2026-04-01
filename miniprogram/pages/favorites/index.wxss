@@ -1,19 +1,21 @@
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+  background: linear-gradient(180deg, #A8C8CA 0%, #D5E5E3 100%);
   padding-bottom: 40rpx;
 }
 
 .header {
   padding: 60rpx 40rpx 40rpx;
-  background: #fff;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  border-radius: 10rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .title {
   font-size: 48rpx;
   font-weight: bold;
-  color: #2c3e50;
+  color: #5d4e37;
   font-family: ZCool, sans-serif;
 }
 
@@ -29,7 +31,7 @@
 }
 
 .item {
-  background: #fff;
+  background: linear-gradient(180deg, #f5f8fa 0%, #e8f1f5 100%);
   border-radius: 24rpx;
   margin-bottom: 24rpx;
   overflow: hidden;
