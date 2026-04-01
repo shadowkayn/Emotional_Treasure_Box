@@ -27,6 +27,8 @@ Page({
     this.fetchQuote();
     this.initBgMusic();
     this.checkFavoriteStatus();
+    // 自动播放音乐
+    this.autoPlayMusic();
   },
 
   // 随机选一首音乐
@@ -101,6 +103,14 @@ Page({
     // 检查当前是否正在播放
     if (bgAudioManager.paused === false) {
       this.setData({ musicPlaying: true });
+    }
+  },
+
+  // 自动播放音乐
+  autoPlayMusic() {
+    // 如果当前没有在播放音乐，则自动播放
+    if (bgAudioManager.paused !== false) {
+      this.playRandomMusic();
     }
   },
 
