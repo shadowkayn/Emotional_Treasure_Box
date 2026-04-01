@@ -130,7 +130,7 @@ function generateQuoteCard(options) {
             ctx.fillText(`—— ${author}`, 225, 520);
 
             // 绘制日期
-            ctx.font = '15px sans-serif';
+            ctx.font = '15px ZCool, sans-serif';
             ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
             ctx.fillText(date, 225, 700);
 

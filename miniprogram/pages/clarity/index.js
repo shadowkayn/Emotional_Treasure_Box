@@ -3,7 +3,7 @@ const { checkLoginWithTip, formatDate, generateQuoteCard, getRandomBgImage } = r
 
 // 音乐列表 - 上传到云存储后把 URL 填这里
 const MUSIC_LIST = [
-  { title: 'sacred play secret place', url: 'https://636c-cloud1-7g27vhf9d8bd5dbb-1415544021.tcb.qcloud.la/Matryoshka%20-%20Sacred%20Play%20Secret%20Place.mp3?sign=00f44ee227b5ce56389e14f55443855c&t=1774842505' },
+  { title: 'sacred play secret place', url: 'https://cdn.jsdelivr.net/gh/shadowkayn/mini-assets@main/audio/Sacred_Play_Secret_Place.mp3' },
 ];
 
 Page({
